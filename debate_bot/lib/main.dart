@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'home.dart';
+import 'package:flutter/material.dart';
+import 'pages/home.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,9 +21,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       initialRoute: '/',
-      routes: {
-        '/': (context) => const Home(title: 'Debate Bot'),
-      },
+      routes: {'/': (context) => const Home(title: 'Debate Bot')},
     );
   }
 }
