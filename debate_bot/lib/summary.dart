@@ -10,7 +10,7 @@ class Summary extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text("Summary"),
+        title: Text('Response for "${input}"'),
       ),
       body: Center(
         child: Text(input),
