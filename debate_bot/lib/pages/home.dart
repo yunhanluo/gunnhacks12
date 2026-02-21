@@ -43,16 +43,17 @@ class _HomeState extends State<Home> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => Summary(input: inputcontroller.text)),
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              Summary(input: inputcontroller.text),
+                        ),
                       );
                     },
                   ),
                 ],
               ),
             ),
-            Text(
-              "Debate Bot",
-            ),
+            Text("Debate Bot"),
             Padding(padding: EdgeInsets.all(4)),
           ],
         ),
