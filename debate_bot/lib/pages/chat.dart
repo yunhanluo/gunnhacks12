@@ -2,9 +2,10 @@ import 'package:debate_bot/services/openai_service.dart';
 import 'package:flutter/material.dart';
 
 class ChatArea extends StatefulWidget {
-  const ChatArea({super.key, required this.topic});
+  const ChatArea({super.key, required this.topic, required this.rawTopic});
 
   final String topic;
+  final String rawTopic;
 
   @override
   State<ChatArea> createState() => _ChatAreaState();
@@ -43,6 +44,7 @@ class _ChatAreaState extends State<ChatArea> {
               }
             },
             controller: scrollController,
+            scrollDirection: Axis.vertical,
           ),
         ),
         Padding(
@@ -54,7 +56,7 @@ class _ChatAreaState extends State<ChatArea> {
                   controller: inputController,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    hintText: "Elaborate on your prompt!",
+                    hintText: "Ask a follow-up question here!",
                   ),
                   onSubmitted: (_) => _processMessage(),
                   focusNode: inputFocus,
@@ -81,7 +83,7 @@ class _ChatAreaState extends State<ChatArea> {
   }
 
   void _processMessage() {
-    if (awaitingAi) return;
+    if (awaitingAi || inputController.text.trim().isEmpty) return;
 
     awaitingAi = true;
 
@@ -92,30 +94,51 @@ class _ChatAreaState extends State<ChatArea> {
       inputFocus.requestFocus();
     });
 
-    setState(() {
-      () async {
-        String response = "";
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        Future.delayed(Duration(milliseconds: 10), () async {
+          String response = "";
 
-        try {
-          final result = await OpenAIService.askAI(
-            systemMessage:
-                "You are debating against a user about ${widget.topic}.",
+          try {
+            final result = await OpenAIService.askAI(
+              systemMessage:
+                  "You are debating against a user about ${widget.topic}. They are taking the stance of ${widget.topic.replaceFirst(widget.rawTopic, "").contains("Affirm") ? "yes" : "no"}. You will be given the entire chat history, where the opponent is labeled \"opponent\" and you are labeled \"you\". Your task is to argue against the opponent, but try not to respond with multiple paragraphs. Instead, respond with at most one paragraph, and try to keep the conversation on track and always argue against the opponent.",
+              userMessage: getChatHistory(),
+            );
 
-            userMessage: _messages.last.message,
-          );
+            response =
+                result["choices"][0]["message"]["content"] ??
+                "We weren't able to get a response.";
 
-          response =
-              result["choices"][0]["message"]["content"] ??
-              "We weren't able to get a response.";
-        } catch (e) {
-          response = "Error: $e";
-        }
+            if (response.startsWith("you: ")) {
+              response = response.substring(5);
+            }
+          } catch (e) {
+            response = "Error: $e";
+          }
 
-        _addMessage(response, _Sender.ai);
+          _addMessage(response, _Sender.ai);
+          // _addMessage(getChatHistory(), _Sender.other);
 
-        awaitingAi = false;
-      }();
+          awaitingAi = false;
+        });
+      });
     });
+  }
+
+  String getChatHistory() {
+    String result = "";
+
+    for (_Message message in _messages) {
+      if (message.sender == _Sender.system) {
+        continue;
+      }
+
+      result +=
+          "${message.sender == _Sender.human ? "opponent" : "you"}: ${message.message}\n";
+    }
+
+    return result.trim();
   }
 }
 
@@ -130,20 +153,22 @@ class _Message extends StatelessWidget {
     return Align(
       alignment: sender == _Sender.human
           ? Alignment.centerLeft
-          : Alignment.centerRight,
-      child: Card(
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+          : (sender == _Sender.system
+                ? Alignment.center
+                : Alignment.centerRight),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.sizeOf(context).width - 700,
         ),
-        color: Theme.of(context).colorScheme.inversePrimary,
-        child: Padding(
-          padding: EdgeInsets.all(8),
-          child: Text(message),
+        child: Card(
+          elevation: 0,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          color: Theme.of(context).colorScheme.inversePrimary,
+          child: Padding(padding: EdgeInsets.all(8), child: Text(message)),
         ),
       ),
     );
   }
 }
 
-enum _Sender { human, ai }
+enum _Sender { human, ai, system }

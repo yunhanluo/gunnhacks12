@@ -34,7 +34,7 @@ An example of your inputs: Topic: "Should the death penalty be abolished?", "Dif
 (Default difficulty: "easy")
 (Default side: "Affirmative").
 You use these inputs for your output. Go through the logic. Please do not simply return the inputs.
-Use these defaults only if the corresponding value is not provided.
+Use these defaults only if the corresponding value is not provided. Please do not include any starting information like "Given these inputs,." This is not good.
 ''';
 
 const String thePrompt = '''
@@ -42,17 +42,17 @@ The task is simple. Return the word: "Cheese is a chicken."
 ''';
 
 class Summary extends StatefulWidget {
-  const Summary({super.key, required this.input});
+  const Summary({super.key, required this.input, required this.rawInput});
 
   final String input;
+  final String rawInput;
 
   @override
   State<Summary> createState() => _SummaryState();
 }
 
 class _SummaryState extends State<Summary> {
-  String response =
-      "Please give us one second while we process your request...";
+  String response = "NOTRESPONDED";
 
   @override
   void initState() {
@@ -115,21 +115,21 @@ class _SummaryState extends State<Summary> {
                     child: Card(
                       elevation: 0,
                       color: Theme.of(context).colorScheme.inversePrimary,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.all(8),
-                            child: Text("Points", style: TextStyle(fontSize: 20)),
-                          ),
-                          Expanded(
-                            child: SingleChildScrollView(
-                              padding: EdgeInsets.fromLTRB(8, 0, 8, 8),
-                              child: Text(response),
+                      child: Padding(
+                        padding: EdgeInsets.all(8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("Points", style: TextStyle(fontSize: 20)),
+                            Expanded(
+                              child: SingleChildScrollView(
+                                child: response != "NOTRESPONDED"
+                                    ? Text(response)
+                                    : LinearProgressIndicator(),
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -139,16 +139,11 @@ class _SummaryState extends State<Summary> {
             Expanded(
               child: Padding(
                 padding: EdgeInsets.all(8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 4),
-                    Text(
-                      "Ask a Follow-up Question",
-                      style: TextStyle(fontSize: 20),
-                    ),
-                    Expanded(child: ChatArea(topic: widget.input)),
-                  ],
+                child: Expanded(
+                  child: ChatArea(
+                    topic: widget.input,
+                    rawTopic: widget.rawInput,
+                  ),
                 ),
               ),
             ),

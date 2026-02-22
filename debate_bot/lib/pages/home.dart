@@ -10,39 +10,89 @@ class Home extends StatefulWidget {
   State<Home> createState() => _HomeState();
 }
 
+enum Side { aff, neg }
+
 class _HomeState extends State<Home> {
   final inputcontroller = TextEditingController();
+  Side sideView = Side.aff;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        foregroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         title: Text("Debate Bot"),
       ),
       body: Center(
         child: Column(
           children: [
-            Text("Welcome to our Debate Bot for GunnHaXII!"),
-            
             Spacer(),
+            Text(
+              "Debate With AI!",
+              style: TextStyle(
+                fontSize: 24,
+                color: Theme.of(context).colorScheme.inversePrimary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Spacer(),
+            Image.asset(
+              'assets/images/robot-bot-black-icon.png',
+              height: 350,
+              fit: BoxFit.contain,
+            ),
+            SizedBox(height: 60),
             Padding(
               padding: EdgeInsets.all(8),
               child: Row(
                 children: [
+                  SegmentedButton<Side>(
+                    showSelectedIcon: false,
+                    style: ButtonStyle(
+                      shape: WidgetStatePropertyAll(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                    ),
+                    segments: const <ButtonSegment<Side>>[
+                      ButtonSegment<Side>(
+                        value: Side.aff,
+                        label: Text('Affirmative'),
+                        icon: Icon(Icons.thumb_up_outlined),
+                      ),
+                      ButtonSegment<Side>(
+                        value: Side.neg,
+                        label: Text('Negative'),
+                        icon: Icon(Icons.thumb_down_outlined),
+                      ),
+                    ],
+                    selected: <Side>{sideView},
+                    onSelectionChanged: (Set<Side> newSelection) {
+                      setState(() {
+                        sideView = newSelection.first;
+                      });
+                    },
+                  ),
+                  SizedBox(width: 8),
                   Expanded(
                     child: TextField(
                       controller: inputcontroller,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
-                        hintText: "Let's get started! Type your topic here to continue.",
+                        hintText: "Type your topic here to get started.",
                       ),
                       onSubmitted: (_) {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) =>
-                                Summary(input: inputcontroller.text),
+                            builder: (context) => Summary(
+                              input: sideView == Side.aff
+                                  ? "Affirmative on ${inputcontroller.text}"
+                                  : "Negative on ${inputcontroller.text}",
+                              rawInput: inputcontroller.text,
+                            ),
                           ),
                         );
                       },
@@ -55,8 +105,12 @@ class _HomeState extends State<Home> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              Summary(input: inputcontroller.text),
+                          builder: (context) => Summary(
+                            input: sideView == Side.aff
+                                ? "Affirmative on ${inputcontroller.text}"
+                                : "Negative on ${inputcontroller.text}",
+                            rawInput: inputcontroller.text,
+                          ),
                         ),
                       );
                     },
@@ -64,7 +118,9 @@ class _HomeState extends State<Home> {
                 ],
               ),
             ),
-            Text("Debate Bot isn't always accurate! Make sure you check before you do!"),
+            Text(
+              "Debate Bot isn't always accurate! Make sure to verify important information.",
+            ),
             Padding(padding: EdgeInsets.all(4)),
           ],
         ),
