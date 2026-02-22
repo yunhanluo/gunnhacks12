@@ -5,9 +5,9 @@ import '../services/openai_service.dart';
 const String defaultInstructions = '''
 You are a debate bot that encourages critical thinking through debates.
 
-You will be given a topic, a difficulty level, and a side at the end of this prompt.
+You will be given a topic, a difficulty level, and a side in the next user message.
 
-Your task is to formulate exactly seven arguments, taking into account the user's chosen difficulty level. 
+Your task is to formulate exactly seven arguments.
 Look through your training data to find relevant examples, keeping in mind which side you are arguing for. 
 For example, if the difficulty level is 'advanced', your arguments should be complex, nuanced, and highly defensible. 
 On 'easy', on the other hand, your arguments should be simple and straightforward. 
@@ -34,7 +34,10 @@ An example of your inputs: Topic: "Should the death penalty be abolished?", "Dif
 (Default difficulty: "Advanced")
 (Default side: "Affirmative").
 You use these inputs for your output. Go through the logic. Please do not simply return the inputs.
-Use these defaults only if the corresponding value is not provided. Please do not include any starting information like "Given these inputs,." This is not good.
+Use these defaults only if the corresponding value is not provided. But if they are not provided, you must use the defaults.
+For example, if the topic and the sides are provided but not the difficulty, the difficulty must be set to advanced.
+Please do not include any starting information like "Given these inputs,." There is no need to restate the topic, difficulty, or side.
+Do not say: "Topic: <topic>, Difficulty: <difficulty>, Side: <side>". These things should be fairly obvious to the user.
 ''';
 
 class Summary extends StatefulWidget {
@@ -67,8 +70,7 @@ class _SummaryState extends State<Summary> {
   Future<void> _fetchPointsResponse() async {
     try {
       final result = await OpenAIService.askAI(
-        systemMessage:
-            defaultInstructions, // or systemMessage: "You are a debate speech outline assistant. Given a debate topic and stance, produce a classically formatted speech outline with the following structure:\nI. Introduction\n   A. Hook\n   B. Thesis statement\nII. Body\n   A. First argument\n      1. Evidence/support\n   B. Second argument\n      1. Evidence/support\n   C. Third argument\n      1. Evidence/support\nIII. Rebuttal\n   A. Anticipated counterargument\n   B. Response\nIV. Conclusion\n   A. Summary\n   B. Closing statement\n\nKeep each point concise but clear.",
+        systemMessage: defaultInstructions,
         userMessage: widget.input,
       );
       setState(() {
@@ -104,7 +106,7 @@ class _SummaryState extends State<Summary> {
     try {
       final result = await OpenAIService.askAI(
         systemMessage:
-            "Please create a speech outline for the given input. It should have enough points to be 7 minutes. Please make it classic style (intro -> body (x paragraphs) -> conclusion)",
+            "Please create a thorough speech outline for the given input and side of the debate. The side of the debate is important.It should have enough points to be 7 minutes. Please make it classic style (intro -> body (x paragraphs) -> conclusion) and do not, I repeat, do not be vague or ambiguous.",
         userMessage: widget.input,
       );
       //print(result["choices"][0]["message"]["content"]);
@@ -123,7 +125,7 @@ class _SummaryState extends State<Summary> {
     try {
       final result = await OpenAIService.askAI(
         systemMessage:
-            "You are a debate assistant. Given a debate topic and stance, identify the strongest arguments the opposing side is likely to make. List them as concise points the user should be prepared to rebut. Format as: - [point]\n- [point]\n... Sort by strength/likelihood. Afterwards, please provide rebuttal points for the given arguments in a 'rebuttal' section at the bottom in the same order.",
+            "You are a debate assistant. You will be given a debate topic and stance in the user's message. Identify the strongest arguments the opposing side is likely to make. (If the side is affirmative, search through your training to find POTENTIAL arguments for negative, and vice versa). It's helpful for the user if you state what side you are rebutting at the very beginning. List them as concise points the user should be prepared to rebut, with newlines in between each point. Sort by strength/likelihood, with the most urgent ones at the beginning. Next, provide rebuttal points for the given arguments in a 'rebuttal' section at the bottom in the exact same order (so that each rebuttal clearly corresponds to a point made by the opposing side).",
         userMessage: widget.input,
       );
       setState(() {
@@ -157,10 +159,7 @@ class _SummaryState extends State<Summary> {
                   icon: Icon(Icons.dashboard),
                   label: 'Dashboard',
                 ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.chat),
-                  label: 'Chat',
-                ),
+                BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'Chat'),
               ],
             )
           : null,
@@ -196,14 +195,16 @@ class _SummaryState extends State<Summary> {
                   ? Text(rebuttalResponse)
                   : LinearProgressIndicator(),
             ),
-            
           ]; // Every Single Dashboard Card
 
-          if (isNarrow) { // This is the mobile UI
+          if (isNarrow) {
+            // This is the mobile UI
             return Column(
               children: [
                 Expanded(
-                  child: _mobileTabIndex == 0 //Tab management
+                  child:
+                      _mobileTabIndex ==
+                          0 //Tab management
                       ? SingleChildScrollView(
                           padding: EdgeInsets.all(8),
                           child: Column(children: infoCards),
@@ -220,7 +221,8 @@ class _SummaryState extends State<Summary> {
             );
           }
 
-          return Padding( // This returns the desktop UI
+          return Padding(
+            // This returns the desktop UI
             padding: EdgeInsets.all(8),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -244,7 +246,8 @@ class _SummaryState extends State<Summary> {
     );
   }
 
-  Widget _buildCard(BuildContext context, String title, Widget content) { //Helps you make every dashboard card
+  Widget _buildCard(BuildContext context, String title, Widget content) {
+    //Helps you make every dashboard card
     return SizedBox(
       width: double.infinity,
       child: Card(
