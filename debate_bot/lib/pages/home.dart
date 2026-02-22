@@ -244,44 +244,29 @@ class _HomeState extends State<Home> {
                   child: isNarrow
                       ? Column(
                           children: [
-                            _buildSegmentedButton(isNarrow),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                _buildSegmentedButton(isNarrow),
+                                SizedBox(width: 8),
+                                _difficultySelector(),
+                              ],
+                            ),
                             SizedBox(height: 8),
                             Row(
                               children: [
                                 Flexible(
-                                  child: ConstrainedBox(
-                                    constraints: BoxConstraints(maxWidth: 220),
-                                    child: TextField(
-                                      controller: inputcontroller,
-                                      decoration: InputDecoration(
-                                        border: OutlineInputBorder(),
-                                        hintText: "Type your topic here.",
-                                      ),
-                                      onSubmitted: (_) => _navigateToSummary(),
+                                  child: TextField(
+                                    controller: inputcontroller,
+                                    decoration: InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      hintText: "Type your topic here.",
                                     ),
+                                    onSubmitted: (_) => _navigateToSummary(),
                                   ),
                                 ),
                                 SizedBox(width: 8),
-                                SizedBox(
-                                  width: 200,
-                                  child: DropdownButton<String>(
-                                    value: _difficulty,
-                                    isExpanded: true,
-                                    items: _difficultyOptions
-                                        .map(
-                                          (d) => DropdownMenuItem(
-                                            value: d,
-                                            child: Text(
-                                              d[0].toUpperCase() +
-                                                  d.substring(1),
-                                            ),
-                                          ),
-                                        )
-                                        .toList(),
-                                    onChanged: (v) =>
-                                        setState(() => _difficulty = v!),
-                                  ),
-                                ),
+
                                 IconButton(
                                   icon: Icon(Icons.send),
                                   onPressed: _navigateToSummary,
@@ -306,26 +291,8 @@ class _HomeState extends State<Home> {
                                 onSubmitted: (_) => _navigateToSummary(),
                               ),
                             ),
-                            SizedBox(width: 100),
-                            SizedBox(
-                              width: 160,
-                              child: DropdownButton<String>(
-                                value: _difficulty,
-                                isExpanded: true,
-                                items: _difficultyOptions
-                                    .map(
-                                      (d) => DropdownMenuItem(
-                                        value: d,
-                                        child: Text(
-                                          d[0].toUpperCase() + d.substring(1),
-                                        ),
-                                      ),
-                                    )
-                                    .toList(),
-                                onChanged: (v) =>
-                                    setState(() => _difficulty = v!),
-                              ),
-                            ),
+                            SizedBox(width: 8),
+                            _difficultySelector(),
                             SizedBox(width: 8),
                             IconButton(
                               icon: Icon(Icons.send),
@@ -336,7 +303,7 @@ class _HomeState extends State<Home> {
                         ),
                 ),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  padding: EdgeInsets.symmetric(horizontal: 0),
                   child: Text(
                     "Make sure to Check Debate Bot's Work!",
                     textAlign: TextAlign.center,
@@ -351,6 +318,25 @@ class _HomeState extends State<Home> {
     );
   }
 
+  Widget _difficultySelector() {
+    return SizedBox(
+      width: 200,
+      child: DropdownButton<String>(
+        value: _difficulty,
+        isExpanded: true,
+        items: _difficultyOptions
+            .map(
+              (d) => DropdownMenuItem(
+                value: d,
+                child: Text(d[0].toUpperCase() + d.substring(1)),
+              ),
+            )
+            .toList(),
+        onChanged: (v) => setState(() => _difficulty = v!),
+      ),
+    );
+  }
+
   Widget _topicChip(String topic) {
     return Row(
       children: [
@@ -361,11 +347,8 @@ class _HomeState extends State<Home> {
               inputcontroller.text = topic;
               sideView = Side.aff;
             });
-
-            // _navigateToSummary();
           },
         ),
-        SizedBox(width: 8),
       ],
     );
   }
