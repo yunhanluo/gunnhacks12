@@ -48,23 +48,23 @@ class Summary extends StatefulWidget {
 }
 
 class _SummaryState extends State<Summary> {
-  String title_response = "NOTRESPONDED";
-  String points_response = "NOTRESPONDED";
-  String outline_response = "NOTRESPONDED";
-  String rebuttal_response = "NOTRESPONDED";
+  String titleResponse = "NOTRESPONDED";
+  String pointsResponse = "NOTRESPONDED";
+  String outlineResponse = "NOTRESPONDED";
+  String rebuttalResponse = "NOTRESPONDED";
   int _mobileTabIndex = 0;
 
   @override
   void initState() {
     super.initState();
 
-    _fetchpoints_response();
-    _fetchtitle_response();
-    _fetchoutline_response();
-    _fetchrebuttal_response();
+    _fetchPointsResponse();
+    _fetchTitleResponse();
+    _fetchOutlineResponse();
+    _fetchRebuttalResponse();
   }
 
-  Future<void> _fetchpoints_response() async {
+  Future<void> _fetchPointsResponse() async {
     try {
       final result = await OpenAIService.askAI(
         systemMessage:
@@ -72,17 +72,17 @@ class _SummaryState extends State<Summary> {
         userMessage: widget.input,
       );
       setState(() {
-        points_response =
+        pointsResponse =
             result["choices"][0]["message"]["content"] ?? "NOTRESPONDED";
       });
     } catch (e) {
       setState(() {
-        points_response = "Error: $e";
+        pointsResponse = "Error: $e";
       });
     }
   }
 
-  Future<void> _fetchtitle_response() async {
+  Future<void> _fetchTitleResponse() async {
     try {
       final result = await OpenAIService.askAI(
         systemMessage:
@@ -90,17 +90,17 @@ class _SummaryState extends State<Summary> {
         userMessage: widget.input,
       );
       setState(() {
-        title_response =
+        titleResponse =
             result["choices"][0]["message"]["content"] ?? "NOTRESPONDED";
       });
     } catch (e) {
       setState(() {
-        title_response = "Error: $e";
+        titleResponse = "Error: $e";
       });
     }
   }
 
-  Future<void> _fetchoutline_response() async {
+  Future<void> _fetchOutlineResponse() async {
     try {
       final result = await OpenAIService.askAI(
         systemMessage:
@@ -109,17 +109,17 @@ class _SummaryState extends State<Summary> {
       );
       //print(result["choices"][0]["message"]["content"]);
       setState(() {
-        outline_response =
+        outlineResponse =
             result["choices"][0]["message"]["content"] ?? "NOTRESPONDED";
       });
     } catch (e) {
       setState(() {
-        outline_response = "Error: $e";
+        outlineResponse = "Error: $e";
       });
     }
   }
 
-  Future<void> _fetchrebuttal_response() async {
+  Future<void> _fetchRebuttalResponse() async {
     try {
       final result = await OpenAIService.askAI(
         systemMessage:
@@ -127,12 +127,12 @@ class _SummaryState extends State<Summary> {
         userMessage: widget.input,
       );
       setState(() {
-        rebuttal_response =
+        rebuttalResponse =
             result["choices"][0]["message"]["content"] ?? "NOTRESPONDED";
       });
     } catch (e) {
       setState(() {
-        rebuttal_response = "Error: $e";
+        rebuttalResponse = "Error: $e";
       });
     }
   }
@@ -143,7 +143,7 @@ class _SummaryState extends State<Summary> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(
-          "Dashboard - ${title_response == "NOTRESPONDED" ? widget.input : title_response}",
+          "Dashboard - ${titleResponse == "NOTRESPONDED" ? widget.input : titleResponse}",
         ),
       ),
       bottomNavigationBar: LayoutBuilder(
@@ -169,36 +169,42 @@ class _SummaryState extends State<Summary> {
         builder: (context, constraints) {
           final isNarrow = constraints.maxWidth < 500;
           final infoCards = [
-            _buildCard(context, "Topic", Text(widget.input)),
+            _buildCard(
+              context,
+              "Title",
+              titleResponse != "NOTRESPONDED"
+                  ? Text("$titleResponse\nOriginal Statement: ${widget.input}")
+                  : LinearProgressIndicator(),
+            ),
             _buildCard(
               context,
               "Points",
-              points_response != "NOTRESPONDED"
-                  ? Text(points_response)
+              pointsResponse != "NOTRESPONDED"
+                  ? Text(pointsResponse)
                   : LinearProgressIndicator(),
             ),
             _buildCard(
               context,
               "Speech Outline",
-              outline_response != "NOTRESPONDED"
-                  ? Text(outline_response)
+              outlineResponse != "NOTRESPONDED"
+                  ? Text(outlineResponse)
                   : LinearProgressIndicator(),
             ),
             _buildCard(
               context,
               "Opposing Points and Their Rebuttals",
-              rebuttal_response != "NOTRESPONDED"
-                  ? Text(rebuttal_response)
+              rebuttalResponse != "NOTRESPONDED"
+                  ? Text(rebuttalResponse)
                   : LinearProgressIndicator(),
             ),
             
-          ];
+          ]; // Every Single Dashboard Card
 
-          if (isNarrow) {
+          if (isNarrow) { // This is the mobile UI
             return Column(
               children: [
                 Expanded(
-                  child: _mobileTabIndex == 0
+                  child: _mobileTabIndex == 0 //Tab management
                       ? SingleChildScrollView(
                           padding: EdgeInsets.all(8),
                           child: Column(children: infoCards),
@@ -215,7 +221,7 @@ class _SummaryState extends State<Summary> {
             );
           }
 
-          return Padding(
+          return Padding( // This returns the desktop UI
             padding: EdgeInsets.all(8),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -239,7 +245,7 @@ class _SummaryState extends State<Summary> {
     );
   }
 
-  Widget _buildCard(BuildContext context, String title, Widget content) {
+  Widget _buildCard(BuildContext context, String title, Widget content) { //Helps you make every dashboard card
     return SizedBox(
       width: double.infinity,
       child: Card(

@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:debate_bot/services/openai_service.dart';
 import 'package:flutter/material.dart';
-import 'summary.dart';
 class ChatArea extends StatefulWidget {
   const ChatArea({super.key, required this.topic, required this.rawTopic});
 
@@ -47,7 +46,7 @@ class _ChatAreaState extends State<ChatArea> {
               ],
             ),
           ),
-        ),
+        ), //Moved the Standing card to a better place. We cant use buildcard here so its manually created.
         Expanded(
           child: ListView.builder(
             itemBuilder: (context, index) {
@@ -173,7 +172,6 @@ class _ChatAreaState extends State<ChatArea> {
                   }
                 : jsonDecode(result["choices"][0]["message"]["content"]);
 
-            print('Hello!  ${response['successPercentage']}');
 
             if ((response["response"] as String).startsWith("you: ")) {
               response = {
