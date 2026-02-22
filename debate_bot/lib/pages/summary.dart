@@ -191,11 +191,7 @@ class _SummaryState extends State<Summary> {
                   ? Text(rebuttal_response)
                   : LinearProgressIndicator(),
             ),
-            _buildCard(
-              context,
-              "Current Standing",
-              Column(children: [SizedBox(height: 8), MeterArea()]),
-            ),
+            
           ];
 
           if (isNarrow) {

@@ -105,6 +105,7 @@ class _HomeState extends State<Home> {
                     ],
                   ),
                 ),
+                !isNarrow ? SizedBox(height: 8) : SizedBox(height: 0),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 8),
                   child: isNarrow
