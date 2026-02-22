@@ -23,11 +23,11 @@ class _SummaryState extends State<Summary> {
   Future<void> _fetchResponse() async {
     try {
       final result = await OpenAIService.askAI(
-        systemMessage: "You are to be a debate assistant. Please provide good debate points in the format -[debatept1] \n -[debatept2]\n...",
+        systemMessage: "You are to be a debate assistant. Please provide good debate points in the format - [point 1 goes here. just put the point directly in here, no prefixing or anything of that sort] \n - [point 2 goes here]\n... Please make the points concise but easily understandable. Aim for quantity, but please sort by quality as well.",
         userMessage: widget.input,
       );
       setState(() {
-        response = result['choices'][0]['message']['content'] ?? "We weren't able to get a response.";
+        response = result["choices"][0]["message"]["content"] ?? "We weren't able to get a response.";
       });
     } catch (e) {
       setState(() {
@@ -73,7 +73,7 @@ class _SummaryState extends State<Summary> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text("Response", style: TextStyle(fontSize: 20)),
+                            Text("Points", style: TextStyle(fontSize: 20)),
                             Text(response),
                           ],
                         ),

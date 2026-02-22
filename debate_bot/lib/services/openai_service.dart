@@ -17,20 +17,14 @@ class OpenAIService {
       },
       body: jsonEncode({
         'model': 'gpt-3.5-turbo',
-        'messages':
-            (systemMessage == null
-                ? []
-                : [
-                    {'role': 'system', 'content': systemMessage},
-                  ]) +
-            (userMessage == null
-                ? []
-                : [
-                    {'role': 'user', 'content': userMessage},
-                  ]),
+        'messages': <Map<String, String>>[
+            if (systemMessage != null)
+              {'role': 'system', 'content': systemMessage},
+            if (userMessage != null)
+              {'role': 'user', 'content': userMessage},
+          ],
         'max_tokens': 500,
         'temperature': 0.7,
-        'response_format': {'type': 'json_object'},
       }),
     );
 
