@@ -13,8 +13,7 @@ class Summary extends StatefulWidget {
 }
 
 class _SummaryState extends State<Summary> {
-  String response =
-      "NOTRESPONDED";
+  String response = "NOTRESPONDED";
 
   @override
   void initState() {
@@ -83,19 +82,28 @@ class _SummaryState extends State<Summary> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text("Points", style: TextStyle(fontSize: 20)),
-                            response != "NOTRESPONDED" ? Text(response) : LinearProgressIndicator(),
+                            response != "NOTRESPONDED"
+                                ? Text(response)
+                                : LinearProgressIndicator(),
                           ],
                         ),
                       ),
                     ),
                   ),
+                  SizedBox.square(dimension: 12),
+                  Expanded(child: MeterArea()),
                 ],
               ),
             ),
             Expanded(
               child: Padding(
                 padding: EdgeInsets.all(8),
-                child: Expanded(child: ChatArea(topic: widget.input, rawTopic: widget.rawInput)),
+                child: Expanded(
+                  child: ChatArea(
+                    topic: widget.input,
+                    rawTopic: widget.rawInput,
+                  ),
+                ),
               ),
             ),
           ],
