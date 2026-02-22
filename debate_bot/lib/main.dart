@@ -39,6 +39,7 @@ class MyApp extends StatelessWidget {
         ),
         textTheme: GoogleFonts.dmSansTextTheme(),
       ),
+      debugShowCheckedModeBanner: false,
       initialRoute: '/',
       routes: {'/': (context) => const Home(title: 'Debate Bot')},
     );
