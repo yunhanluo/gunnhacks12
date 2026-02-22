@@ -58,7 +58,7 @@ class _ChatAreaState extends State<ChatArea> {
                   controller: inputController,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    hintText: "Ask a follow-up question here!",
+                    hintText: "Ask a follow-up question here! Or, take a try at debating and type in your points.",
                   ),
                   onSubmitted: (_) => _processMessage(),
                   focusNode: inputFocus,
@@ -104,7 +104,7 @@ class _ChatAreaState extends State<ChatArea> {
           try {
             final result = await OpenAIService.askAI(
               systemMessage:
-                  "You are debating against a user about ${widget.topic}. They are taking the stance of ${widget.topic.replaceFirst(widget.rawTopic, "").contains("Affirm") ? "yes" : "no"}. You will be given the entire chat history, where the opponent is labeled \"opponent\" and you are labeled \"you\". Your task is to argue against the opponent, but try not to respond with multiple paragraphs. Instead, respond with at most one paragraph, and try to keep the conversation on track and always argue against the opponent. Format your response in a JSON with the key \"response\" containing your response and the key \"successPercentage\" containing a number from 0-100 detailing how well you think your opponent is doing in the debate.",
+                  "You are debating against a user about ${widget.topic}. They are taking the stance of ${widget.topic.replaceFirst(widget.rawTopic, "").contains("Affirm") ? "yes" : "no"}. You will be given the entire chat history, where the opponent is labeled \"opponent\" and you are labeled \"you\". Your task is to argue against the opponent, but try not to respond with multiple paragraphs. Instead, respond with at most one paragraph, and try to keep the conversation on track and always argue against the opponent. Sometimes the user may ask you a question of the topic. In that case, please answer. Don't talk about the debating stuff written before. When the user is ready to debate, just smoothly transition into debate mode. Format your response in a JSON with the key \"response\" containing your response and the key \"successPercentage\" containing a number from 0-100 detailing how well you think your opponent is doing in the debate.",
               userMessage: getChatHistory(),
             );
 
@@ -178,7 +178,14 @@ class _Message extends StatelessWidget {
         ),
         child: Card(
           elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(sender == _Sender.human ? 0 : 8),
+              topRight: Radius.circular(sender == _Sender.ai ? 0 : 8),
+              bottomLeft: Radius.circular(8),
+              bottomRight: Radius.circular(8),
+            ),
+          ),
           color: Theme.of(context).colorScheme.inversePrimary,
           child: Padding(padding: EdgeInsets.all(8), child: Text(message)),
         ),
