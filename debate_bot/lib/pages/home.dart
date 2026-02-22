@@ -73,9 +73,7 @@ class _HomeState extends State<Home> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => Summary(
-                              input: sideView == Side.aff
-                                  ? "Affirmative on ${inputcontroller.text}"
-                                  : "Negative on ${inputcontroller.text}",
+                              input: sideView == Side.aff ? "Affirmative on '${inputcontroller.text}'" : "Negative on '${inputcontroller.text}'",
                               rawInput: inputcontroller.text,
                             ),
                           ),
@@ -89,14 +87,12 @@ class _HomeState extends State<Home> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => Summary(
-                            input: sideView == Side.aff
-                                ? "Affirmative on ${inputcontroller.text}"
-                                : "Negative on ${inputcontroller.text}",
-                            rawInput: inputcontroller.text,
+                          MaterialPageRoute(
+                            builder: (context) => Summary(
+                              input: sideView == Side.aff ? "Affirmative on '${inputcontroller.text}'" : "Negative on '${inputcontroller.text}'",
+                              rawInput: inputcontroller.text,
+                            ),
                           ),
-                        ),
                       );
                     },
                   ),
@@ -104,7 +100,7 @@ class _HomeState extends State<Home> {
               ),
             ),
             Text(
-              "Debate Bot isn't always accurate! Make sure you check before you do!",
+              "Debate Bot isn't always accurate! Make sure you check before you do anything serious!",
             ),
             Padding(padding: EdgeInsets.all(4)),
           ],
