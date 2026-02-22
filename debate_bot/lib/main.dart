@@ -18,7 +18,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Debate Bot (GunnHaXII)',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.black,
+          primary: Colors.black,
+          onPrimary: Colors.white,
+        ),
       ),
       initialRoute: '/',
       routes: {'/': (context) => const Home(title: 'Debate Bot')},

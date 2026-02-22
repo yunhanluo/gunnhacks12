@@ -20,7 +20,8 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        foregroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         title: Text("Debate Bot"),
       ),
       body: Center(
@@ -52,6 +53,21 @@ class _HomeState extends State<Home> {
                 _topicChip("Homework should be abolished"),
               ],
             ),
+            Text(
+              "Debate With AI!",
+              style: TextStyle(
+                fontSize: 24,
+                color: Theme.of(context).colorScheme.inversePrimary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Spacer(),
+            Image.asset(
+              'assets/images/robot-bot-black-icon.png',
+              height: 350,
+              fit: BoxFit.contain,
+            ),
+            SizedBox(height: 60),
             Padding(
               padding: EdgeInsets.all(8),
               child: Row(
@@ -90,8 +106,7 @@ class _HomeState extends State<Home> {
                       controller: inputcontroller,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
-                        hintText:
-                            "Let's get started! Type your topic here to continue.",
+                        hintText: "Type your topic here to get started.",
                       ),
                       onSubmitted: (_) {
                         Navigator.push(
