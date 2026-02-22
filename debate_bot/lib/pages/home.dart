@@ -24,7 +24,7 @@ class _HomeState extends State<Home> {
         child: Column(
           children: [
             Text("Welcome to our Debate Bot for GunnHaXII!"),
-
+            
             Spacer(),
             Padding(
               padding: EdgeInsets.all(8),

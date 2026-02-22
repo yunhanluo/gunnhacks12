@@ -1,3 +1,4 @@
+import 'package:debate_bot/pages/chat.dart';
 import 'package:flutter/material.dart';
 import '../services/openai_service.dart';
 
@@ -83,12 +84,7 @@ class _SummaryState extends State<Summary> {
               ),
             ),
             Expanded(
-              child: Column(
-                children: [
-                  Text("Hello World"),
-                  Text("This is where the 'chat' will go"),
-                ],
-              ),
+              child: ChatArea(),
             ),
           ],
         ),

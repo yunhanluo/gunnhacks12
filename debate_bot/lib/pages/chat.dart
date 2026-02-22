@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 
-class Summary extends StatefulWidget {
-  const Summary({super.key, required this.input});
-
-  final String input;
+class ChatArea extends StatefulWidget {
+  const ChatArea({super.key});
 
   @override
-  State<Summary> createState() => _SummaryState();
+  State<ChatArea> createState() => _ChatAreaState();
 }
 
-class _SummaryState extends State<Summary> {
+class _ChatAreaState extends State<ChatArea> {
   final inputController = TextEditingController();
   final inputFocus = FocusNode();
 
@@ -34,7 +32,7 @@ class _SummaryState extends State<Summary> {
         children: [
           SizedBox(
             width: MediaQuery.sizeOf(context).width,
-            height: MediaQuery.sizeOf(context).height - 148,
+            height: MediaQuery.sizeOf(context).height - 164,
             child: ListView.builder(
               itemBuilder: (context, index) {
                 if (index < _messages.length) {
