@@ -161,7 +161,7 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget _buildSegmentedButton() {
+  Widget _buildSegmentedButton(bool isNarrow) {
     return SegmentedButton<Side>(
       showSelectedIcon: false,
       style: ButtonStyle(
@@ -169,8 +169,16 @@ class _HomeState extends State<Home> {
           RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
         ),
       ),
-      segments: const <ButtonSegment<Side>>[
-        ButtonSegment<Side>(value: Side.aff, label: Text('AFF')),
+      segments: <ButtonSegment<Side>>[
+        ButtonSegment<Side>(
+          value: Side.aff,
+          label: Padding(
+            padding: !isNarrow
+                ? EdgeInsets.symmetric(vertical: 14)
+                : EdgeInsets.all(0),
+            child: Text('AFF'),
+          ),
+        ),
         ButtonSegment<Side>(value: Side.neg, label: Text('NEG')),
       ],
       selected: <Side>{sideView},
@@ -228,7 +236,7 @@ class _HomeState extends State<Home> {
                   child: isNarrow
                       ? Column(
                           children: [
-                            _buildSegmentedButton(),
+                            _buildSegmentedButton(isNarrow),
                             SizedBox(height: 8),
                             Row(
                               children: [
@@ -276,7 +284,7 @@ class _HomeState extends State<Home> {
                         )
                       : Row(
                           children: [
-                            _buildSegmentedButton(),
+                            _buildSegmentedButton(isNarrow),
                             SizedBox(width: 8),
                             ConstrainedBox(
                               constraints: BoxConstraints(maxWidth: 800),
