@@ -53,28 +53,68 @@ class Summary extends StatefulWidget {
 
 class _SummaryState extends State<Summary> {
   String response = "NOTRESPONDED";
+  String title_response = "NOTRESPONDED";
+  String points_response = "NOTRESPONDED";
+  String outline_response = "NOTRESPONDED";
 
   @override
   void initState() {
     super.initState();
-    _fetchResponse();
+    _fetchpoints_response();
+    _fetchtitle_response();
+    _fetchoutline_response();
   }
 
-  Future<void> _fetchResponse() async {
+  Future<void> _fetchpoints_response() async {
     try {
       final result = await OpenAIService.askAI(
         systemMessage: defaultInstructions,
         userMessage: widget.input,
       );
-      print(result["choices"][0]["message"]["content"]);
       setState(() {
-        response =
-            result["choices"][0]["message"]["content"] ??
-            "We weren't able to get a response.";
+        points_response =
+            result["choices"][0]["message"]["content"] ?? "NOTRESPONDED";
       });
     } catch (e) {
       setState(() {
-        response = "Error: $e";
+        points_response = "Error: $e";
+      });
+    }
+  }
+
+  Future<void> _fetchtitle_response() async {
+    try {
+      final result = await OpenAIService.askAI(
+        systemMessage:
+            "Please provide a very, very short summary of the debate topic. Include the aff/neg stance by adding it at the beginning (either 'Affirmative', or 'Negative'), followed by a colon, then the rest of the summary. Make sure to be precise, around 5 words max. Don't say anything like 'arguing for/against... topic', just say the topic. Please make it title format, and do NOT add a period.",
+        userMessage: widget.input,
+      );
+      setState(() {
+        title_response =
+            result["choices"][0]["message"]["content"] ?? "NOTRESPONDED";
+      });
+    } catch (e) {
+      setState(() {
+        title_response = "Error: $e";
+      });
+    }
+  }
+
+  Future<void> _fetchoutline_response() async {
+    try {
+      final result = await OpenAIService.askAI(
+        systemMessage:
+            "You are to be a debate assistant. Please provide good debate points in the format - [point 1 goes here. just put the point directly in here, no prefixing or anything of that sort] \n - [point 2 goes here]\n... Please make the points concise but easily understandable. Aim for quantity, but please sort by quality as well.",
+        userMessage: widget.input,
+      );
+      print(result["choices"][0]["message"]["content"]);
+      setState(() {
+        outline_response =
+            result["choices"][0]["message"]["content"] ?? "NOTRESPONDED";
+      });
+    } catch (e) {
+      setState(() {
+        outline_response = "Error: $e";
       });
     }
   }
@@ -84,11 +124,14 @@ class _SummaryState extends State<Summary> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text("Debate Bot"),
+        title: Text(
+          "Dashboard - ${title_response == "NOTRESPONDED" ? widget.input : title_response}",
+        ),
       ),
       body: Padding(
         padding: EdgeInsets.all(8),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
               child: Column(
@@ -110,8 +153,8 @@ class _SummaryState extends State<Summary> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 8),
-                  Expanded(
+                  SizedBox(
+                    width: double.infinity,
                     child: Card(
                       elevation: 0,
                       color: Theme.of(context).colorScheme.inversePrimary,
@@ -121,13 +164,9 @@ class _SummaryState extends State<Summary> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text("Points", style: TextStyle(fontSize: 20)),
-                            Expanded(
-                              child: SingleChildScrollView(
-                                child: response != "NOTRESPONDED"
-                                    ? Text(response)
-                                    : LinearProgressIndicator(),
-                              ),
-                            ),
+                            response != "NOTRESPONDED"
+                                ? Text(response)
+                                : LinearProgressIndicator(),
                           ],
                         ),
                       ),

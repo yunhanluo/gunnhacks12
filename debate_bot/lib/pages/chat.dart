@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:debate_bot/services/openai_service.dart';
 import 'package:flutter/material.dart';
 
@@ -56,7 +58,7 @@ class _ChatAreaState extends State<ChatArea> {
                   controller: inputController,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    hintText: "Ask a follow-up question here!",
+                    hintText: "Ask a follow-up question here! Or, take a try at debating and type in your points.",
                   ),
                   onSubmitted: (_) => _processMessage(),
                   focusNode: inputFocus,
@@ -97,28 +99,42 @@ class _ChatAreaState extends State<ChatArea> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
         Future.delayed(Duration(milliseconds: 10), () async {
-          String response = "";
+          Map<String, dynamic> response;
 
           try {
             final result = await OpenAIService.askAI(
               systemMessage:
-                  "You are debating against a user about ${widget.topic}. They are taking the stance of ${widget.topic.replaceFirst(widget.rawTopic, "").contains("Affirm") ? "yes" : "no"}. You will be given the entire chat history, where the opponent is labeled \"opponent\" and you are labeled \"you\". Your task is to argue against the opponent, but try not to respond with multiple paragraphs. Instead, respond with at most one paragraph, and try to keep the conversation on track and always argue against the opponent.",
+                  "You are debating against a user about ${widget.topic}. They are taking the stance of ${widget.topic.replaceFirst(widget.rawTopic, "").contains("Affirm") ? "yes" : "no"}. You will be given the entire chat history, where the opponent is labeled \"opponent\" and you are labeled \"you\". Your task is to argue against the opponent, but try not to respond with multiple paragraphs. Instead, respond with at most one paragraph, and try to keep the conversation on track and always argue against the opponent. Sometimes the user may ask you a question of the topic. In that case, please answer. Don't talk about the debating stuff written before. When the user is ready to debate, just smoothly transition into debate mode. Format your response in a JSON with the key \"response\" containing your response and the key \"successPercentage\" containing a number from 0-100 detailing how well you think your opponent is doing in the debate.",
               userMessage: getChatHistory(),
             );
 
-            response =
-                result["choices"][0]["message"]["content"] ??
-                "We weren't able to get a response.";
+            response = result["choices"][0]["message"]["content"] == null
+                ? {
+                    "response": "We weren't able to get a response.",
+                    "successPercentage": _MeterDataHolder().userRating,
+                  }
+                : jsonDecode(result["choices"][0]["message"]["content"]);
 
-            if (response.startsWith("you: ")) {
-              response = response.substring(5);
+            if ((response["response"] as String).startsWith("you: ")) {
+              response = {
+                "response": (response["response"] as String).substring(5),
+                "successPercentage": response["successPercentage"],
+              };
             }
           } catch (e) {
-            response = "Error: $e";
+            response = {
+              "response": "Error: $e",
+              "successPercentage": _MeterDataHolder().userRating,
+            };
           }
 
-          _addMessage(response, _Sender.ai);
+          _addMessage(response["response"], _Sender.ai);
           // _addMessage(getChatHistory(), _Sender.other);
+
+          _MeterDataHolder().setUserRating(
+            (response["successPercentage"] is int ? response["successPercentage"] : int.tryParse(response["successPercentage"])) ??
+                _MeterDataHolder().userRating,
+          );
 
           awaitingAi = false;
         });
@@ -162,7 +178,14 @@ class _Message extends StatelessWidget {
         ),
         child: Card(
           elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(sender == _Sender.human ? 0 : 8),
+              topRight: Radius.circular(sender == _Sender.ai ? 0 : 8),
+              bottomLeft: Radius.circular(8),
+              bottomRight: Radius.circular(8),
+            ),
+          ),
           color: Theme.of(context).colorScheme.inversePrimary,
           child: Padding(padding: EdgeInsets.all(8), child: Text(message)),
         ),
@@ -172,3 +195,80 @@ class _Message extends StatelessWidget {
 }
 
 enum _Sender { human, ai, system }
+
+class MeterArea extends StatefulWidget {
+  const MeterArea({super.key});
+
+  @override
+  State<StatefulWidget> createState() => _MeterAreaState();
+}
+
+class _MeterAreaState extends State<MeterArea> {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      spacing: 30,
+      children: [
+        ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: 40),
+          child: Row(
+            spacing: 8,
+            children: [
+              SizedBox.square(dimension: 2),
+              SizedBox(width: 100, child: Text("How well you are doing: ")),
+              Expanded(
+                child: ListenableBuilder(
+                  listenable: _MeterDataHolder(),
+                  builder: (context, child) {
+                    return LinearProgressIndicator(
+                      value: _MeterDataHolder().userRating / 100,
+                      minHeight: 35,
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+        ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: 40),
+          child: Row(
+            spacing: 8,
+            children: [
+              SizedBox.square(dimension: 2),
+              SizedBox(width: 100, child: Text("How well AI is doing: ")),
+              Expanded(
+                child: ListenableBuilder(
+                  listenable: _MeterDataHolder(),
+                  builder: (context, child) {
+                    return LinearProgressIndicator(
+                      value: 1 - _MeterDataHolder().userRating / 100,
+                      minHeight: 35,
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _MeterDataHolder with ChangeNotifier {
+  static final _MeterDataHolder _instance = _MeterDataHolder._internal();
+  factory _MeterDataHolder() => _instance;
+
+  _MeterDataHolder._internal();
+
+  int _progressBar1 = 50;
+
+  int get userRating => _progressBar1;
+
+  void setUserRating(int newRating) {
+    _progressBar1 = newRating;
+    notifyListeners();
+  }
+}

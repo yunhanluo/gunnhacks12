@@ -89,8 +89,8 @@ class _HomeState extends State<Home> {
                           MaterialPageRoute(
                             builder: (context) => Summary(
                               input: sideView == Side.aff
-                                  ? "Affirmative on ${inputcontroller.text}"
-                                  : "Negative on ${inputcontroller.text}",
+                                  ? "Affirmative on '${inputcontroller.text}'"
+                                  : "Negative on '${inputcontroller.text}'",
                               rawInput: inputcontroller.text,
                             ),
                           ),
@@ -107,21 +107,22 @@ class _HomeState extends State<Home> {
                         MaterialPageRoute(
                           builder: (context) => Summary(
                             input: sideView == Side.aff
-                                ? "Affirmative on ${inputcontroller.text}"
-                                : "Negative on ${inputcontroller.text}",
+                                ? "Affirmative on '${inputcontroller.text}'"
+                                : "Negative on '${inputcontroller.text}'",
                             rawInput: inputcontroller.text,
                           ),
                         ),
                       );
                     },
                   ),
+                  SizedBox(width: 8),
                 ],
               ),
             ),
             Text(
-              "Debate Bot isn't always accurate! Make sure to verify important information.",
+              "Debate Bot isn't always accurate! Make sure you check before you do anything serious!",
             ),
-            Padding(padding: EdgeInsets.all(4)),
+            SizedBox(height: 8),
           ],
         ),
       ),
