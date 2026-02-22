@@ -204,21 +204,23 @@ class _HomeState extends State<Home> {
                 SizedBox(height: constraints.maxHeight > 700 ? 160 : 8),
                 Image.asset(
                   'assets/images/robot-bot-black-icon.png',
-                  height: isNarrow ? 150 : 350,
+                  height: isNarrow
+                      ? (constraints.maxHeight < 700 ? 100 : 200)
+                      : 350,
                   fit: BoxFit.contain,
                 ),
                 SizedBox(height: 8),
                 Text(
                   "Welcome to Debate Bot",
                   style: TextStyle(
-                    fontSize: isNarrow ? 22 : 28,
+                    fontSize: isNarrow ? 18 : 28,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 SizedBox(height: 4),
                 Text(
                   "Win Your Debates",
-                  style: TextStyle(fontSize: 18, color: Colors.grey[600]),
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                   textAlign: TextAlign.center,
                 ),
 
