@@ -6,7 +6,9 @@ import 'pages/home.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await dotenv.load(fileName: ".env");
+  try {
+    await dotenv.load(fileName: ".env");
+  } catch (_) {}
 
   runApp(const MyApp());
 }
