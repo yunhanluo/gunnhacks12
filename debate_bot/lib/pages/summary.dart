@@ -55,6 +55,7 @@ class _SummaryState extends State<Summary> {
   String title_response = "NOTRESPONDED";
   String points_response = "NOTRESPONDED";
   String outline_response = "NOTRESPONDED";
+  String rebuttal_response = "NOTRESPONDED";
 
   @override
   void initState() {
@@ -63,6 +64,7 @@ class _SummaryState extends State<Summary> {
     _fetchpoints_response();
     _fetchtitle_response();
     _fetchoutline_response();
+    _fetchrebuttal_response();
   }
 
   Future<void> _fetchpoints_response() async {
@@ -105,7 +107,7 @@ class _SummaryState extends State<Summary> {
     try {
       final result = await OpenAIService.askAI(
         systemMessage:
-            "You are to be a debate assistant. Please provide good debate points in the format - [point 1 goes here. just put the point directly in here, no prefixing or anything of that sort] \n - [point 2 goes here]\n... Please make the points concise but easily understandable. Aim for quantity, but please sort by quality as well.",
+            "Please create a speech outline for the given input. It should have enough points to be 7 minutes. Please make it classic style (intro -> body (x paragraphs) -> conclusion)",
         userMessage: widget.input,
       );
       print(result["choices"][0]["message"]["content"]);
@@ -116,6 +118,24 @@ class _SummaryState extends State<Summary> {
     } catch (e) {
       setState(() {
         outline_response = "Error: $e";
+      });
+    }
+  }
+
+  Future<void> _fetchrebuttal_response() async {
+    try {
+      final result = await OpenAIService.askAI(
+        systemMessage:
+            "You are a debate assistant. Given a debate topic and stance, identify the strongest arguments the opposing side is likely to make. List them as concise points the user should be prepared to rebut. Format as: - [point]\n- [point]\n... Sort by strength/likelihood. Afterwards, please provide rebuttal points for the given arguments in a 'rebuttal' section at the bottom in the same order.",
+        userMessage: widget.input,
+      );
+      setState(() {
+        rebuttal_response =
+            result["choices"][0]["message"]["content"] ?? "NOTRESPONDED";
+      });
+    } catch (e) {
+      setState(() {
+        rebuttal_response = "Error: $e";
       });
     }
   }
@@ -190,6 +210,28 @@ class _SummaryState extends State<Summary> {
                               ),
                               outline_response != "NOTRESPONDED"
                                   ? Text(outline_response)
+                                  : LinearProgressIndicator(),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: Card(
+                        elevation: 0,
+                        color: Theme.of(context).colorScheme.inversePrimary,
+                        child: Padding(
+                          padding: EdgeInsets.all(8),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Opposing Points and Their Rebuttals",
+                                style: TextStyle(fontSize: 20),
+                              ),
+                              rebuttal_response != "NOTRESPONDED"
+                                  ? Text(rebuttal_response)
                                   : LinearProgressIndicator(),
                             ],
                           ),
