@@ -96,13 +96,14 @@ class _HomeState extends State<Home> {
                       );
                     },
                   ),
+                  SizedBox(width: 8),
                 ],
               ),
             ),
             Text(
               "Debate Bot isn't always accurate! Make sure you check before you do anything serious!",
             ),
-            Padding(padding: EdgeInsets.all(4)),
+            SizedBox(height: 8),
           ],
         ),
       ),
