@@ -110,20 +110,26 @@ class _SummaryState extends State<Summary> {
                       ),
                     ),
                   ),
-                  SizedBox(
-                    width: double.infinity,
+                  SizedBox(height: 8),
+                  Expanded(
                     child: Card(
                       elevation: 0,
                       color: Theme.of(context).colorScheme.inversePrimary,
-                      child: Padding(
-                        padding: EdgeInsets.all(8),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text("Points", style: TextStyle(fontSize: 20)),
-                            Text(response),
-                          ],
-                        ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.all(8),
+                            child: Text("Points", style: TextStyle(fontSize: 20)),
+                          ),
+                          Expanded(
+                            child: SingleChildScrollView(
+                              padding: EdgeInsets.fromLTRB(8, 0, 8, 8),
+                              child: Text(response),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
