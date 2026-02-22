@@ -23,53 +23,47 @@ class _ChatAreaState extends State<ChatArea> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text("Debate Bot"),
-      ),
-      body: Column(
-        children: [
-          SizedBox(
-            width: MediaQuery.sizeOf(context).width,
-            height: MediaQuery.sizeOf(context).height - 164,
-            child: ListView.builder(
-              itemBuilder: (context, index) {
-                if (index < _messages.length) {
-                  return ListTile(title: _messages[index]);
-                } else {
-                  return null;
-                }
-              },
-              controller: scrollController,
-            ),
+    return Column(
+      children: [
+        SizedBox(
+          width: MediaQuery.sizeOf(context).width,
+          height: MediaQuery.sizeOf(context).height - 108,
+          child: ListView.builder(
+            itemBuilder: (context, index) {
+              if (index < _messages.length) {
+                return ListTile(title: _messages[index]);
+              } else {
+                return null;
+              }
+            },
+            controller: scrollController,
           ),
-          Padding(
-            padding: EdgeInsets.all(8),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: inputController,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: "...",
-                    ),
-                    onSubmitted: (_) => _processMessage(),
-                    focusNode: inputFocus,
+        ),
+        Padding(
+          padding: EdgeInsets.all(8),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: inputController,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: "...",
                   ),
+                  onSubmitted: (_) => _processMessage(),
+                  focusNode: inputFocus,
                 ),
-                SizedBox(width: 8),
-                IconButton(icon: Icon(Icons.send), onPressed: _processMessage),
-              ],
-            ),
+              ),
+              SizedBox(width: 8),
+              IconButton(icon: Icon(Icons.send), onPressed: _processMessage),
+            ],
           ),
-          Text(
-            "Debate Bot isn't always accurate! Make sure you check before you do!",
-          ),
-          Padding(padding: EdgeInsets.all(4)),
-        ],
-      ),
+        ),
+        Text(
+          "Debate Bot isn't always accurate! Make sure you check before you do!",
+        ),
+        Padding(padding: EdgeInsets.all(4)),
+      ],
     );
   }
 
@@ -81,8 +75,11 @@ class _ChatAreaState extends State<ChatArea> {
       inputFocus.requestFocus();
     });
 
-    setState(() {
-      scrollController.jumpTo(scrollController.position.maxScrollExtent);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(
+        () =>
+            scrollController.jumpTo(scrollController.position.maxScrollExtent),
+      );
     });
   }
 }
