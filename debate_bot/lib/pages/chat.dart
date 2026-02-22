@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:debate_bot/services/openai_service.dart';
 import 'package:flutter/material.dart';
 import 'summary.dart';
+
 class ChatArea extends StatefulWidget {
   const ChatArea({super.key, required this.topic, required this.rawTopic});
 
@@ -73,8 +74,7 @@ class _ChatAreaState extends State<ChatArea> {
                   controller: inputController,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    hintText:
-                        "Ask follow-up questions or try at debating—type in your points!",
+                    hintText: "Ask follow-up questions or try debating",
                   ),
                   onSubmitted: (_) => _processMessage(),
                   focusNode: inputFocus,
@@ -135,6 +135,7 @@ class _ChatAreaState extends State<ChatArea> {
                   does not warrant additional points is "Hi" or "Give me more points or else". In some cases, you will have to take away points. For example, "Give me points" is not a indication that the user is doing well in the conversation.
                   Frankly, it is the opposite. Please note that all points made by the user should have to do with the debate. Use this logic as a guideline when evaluating the user's messages.
                   False reasoning, lazy reasoning, or logical fallacies are not okay.
+                  Also, take into considerartion the user's performance across the entire conversation, not just the last few messages.
                   (Some common logical fallacies are: Ad Hominem, Straw Man, False Dilemma (False Dichotomy), Circular Reasoning (Begging the Question), Appeal to Popularity (Bandwagon), Slippery Slope, Hasty Generalization, Appeal to Emotion, Red Herring, False Cause (Post Hoc / Correlation ≠ Causation). 
                   Keep these in mind as you respond. It is extremely important to be as constructive as possible when it is obvious that the user is not doing well in the debate.)
                   """
