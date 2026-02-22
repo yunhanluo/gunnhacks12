@@ -196,7 +196,6 @@ class _SummaryState extends State<Summary> {
                         ),
                       ),
                     ),
-                    SizedBox.square(dimension: 8),
                     SizedBox(
                       width: double.infinity,
                       child: Card(

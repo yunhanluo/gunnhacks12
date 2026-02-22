@@ -113,6 +113,8 @@ class _HomeState extends State<Home> {
                         hintText: "Type your topic here to get started.",
                       ),
                       onSubmitted: (_) {
+                        if (inputcontroller.text.trim().isEmpty) return;
+
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -134,6 +136,8 @@ class _HomeState extends State<Home> {
                   IconButton(
                     icon: Icon(Icons.send),
                     onPressed: () {
+                      if (inputcontroller.text.trim().isEmpty) return;
+                        
                       Navigator.push(
                         context,
                         MaterialPageRoute(
