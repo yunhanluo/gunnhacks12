@@ -26,7 +26,32 @@ class _HomeState extends State<Home> {
       body: Center(
         child: Column(
           children: [
+            SizedBox(height: 24),
+            Text(
+              "Welcome to Debate Bot",
+              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 4),
+            Text(
+              "Practice debating, get talking points, and sharpen your arguments.",
+              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+            ),
+            SizedBox(height: 24),
+
+            SizedBox(height: 8),
             Spacer(),
+            Row(
+              children: [
+                SizedBox(width: 16),
+                Text("Need inspiration? Try one of these!", style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey[600])),
+                SizedBox(width: 16),
+                _topicChip("School uniforms should be mandatory"),
+                _topicChip("Social media does more harm than good"),
+                _topicChip("College education should be free"),
+                _topicChip("Space exploration is worth the cost"),
+                _topicChip("Homework should be abolished"),
+              ],
+            ),
             Padding(
               padding: EdgeInsets.all(8),
               child: Row(
@@ -73,7 +98,9 @@ class _HomeState extends State<Home> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => Summary(
-                              input: sideView == Side.aff ? "Affirmative on '${inputcontroller.text}'" : "Negative on '${inputcontroller.text}'",
+                              input: sideView == Side.aff
+                                  ? "Affirmative on '${inputcontroller.text}'"
+                                  : "Negative on '${inputcontroller.text}'",
                               rawInput: inputcontroller.text,
                             ),
                           ),
@@ -87,12 +114,14 @@ class _HomeState extends State<Home> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                          MaterialPageRoute(
-                            builder: (context) => Summary(
-                              input: sideView == Side.aff ? "Affirmative on '${inputcontroller.text}'" : "Negative on '${inputcontroller.text}'",
-                              rawInput: inputcontroller.text,
-                            ),
+                        MaterialPageRoute(
+                          builder: (context) => Summary(
+                            input: sideView == Side.aff
+                                ? "Affirmative on '${inputcontroller.text}'"
+                                : "Negative on '${inputcontroller.text}'",
+                            rawInput: inputcontroller.text,
                           ),
+                        ),
                       );
                     },
                   ),
@@ -107,6 +136,32 @@ class _HomeState extends State<Home> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _topicChip(String topic) {
+    return Row(
+      children: [
+        ActionChip(
+          label: Text(topic),
+          onPressed: () {
+            inputcontroller.text = topic;
+            sideView = Side.aff;
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => Summary(
+                  input: sideView == Side.aff
+                      ? "Affirmative on '${inputcontroller.text}'"
+                      : "Negative on '${inputcontroller.text}'",
+                  rawInput: inputcontroller.text,
+                ),
+              ),
+            );
+          },
+        ),
+        SizedBox(width: 8),
+      ],
     );
   }
 }
