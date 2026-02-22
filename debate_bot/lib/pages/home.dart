@@ -37,24 +37,15 @@ class _HomeState extends State<Home> {
   Widget _buildSegmentedButton() {
     return SegmentedButton<Side>(
       showSelectedIcon: false,
+      expandedInsets: EdgeInsets.zero,
       style: ButtonStyle(
         shape: WidgetStatePropertyAll(
-          RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(4),
-          ),
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
         ),
       ),
       segments: const <ButtonSegment<Side>>[
-        ButtonSegment<Side>(
-          value: Side.aff,
-          label: Text('Affirmative', style: TextStyle(fontSize: 16)),
-          icon: Icon(Icons.thumb_up_outlined),
-        ),
-        ButtonSegment<Side>(
-          value: Side.neg,
-          label: Text('Negative', style: TextStyle(fontSize: 16)),
-          icon: Icon(Icons.thumb_down_outlined),
-        ),
+        ButtonSegment<Side>(value: Side.aff, label: Text('AFF')),
+        ButtonSegment<Side>(value: Side.neg, label: Text('NEG')),
       ],
       selected: <Side>{sideView},
       onSelectionChanged: (Set<Side> newSelection) {
@@ -78,12 +69,13 @@ class _HomeState extends State<Home> {
           return Center(
             child: Column(
               children: [
-                SizedBox(height: 24),
+                SizedBox(height: constraints.maxHeight > 700 ? 160 : 8),
                 Image.asset(
                   'assets/images/robot-bot-black-icon.png',
                   height: isNarrow ? 150 : 350,
                   fit: BoxFit.contain,
                 ),
+                SizedBox(height: 8),
                 Text(
                   "Welcome to Debate Bot",
                   style: TextStyle(
@@ -93,11 +85,10 @@ class _HomeState extends State<Home> {
                 ),
                 SizedBox(height: 4),
                 Text(
-                  "Get Talking Points\nPractice Debating\nMake Better Arguments\nWin",
+                  "Win Your Debates",
                   style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 16),
 
                 Spacer(),
                 SingleChildScrollView(
@@ -116,7 +107,7 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.all(8),
+                  padding: EdgeInsets.symmetric(horizontal: 8),
                   child: isNarrow
                       ? Column(
                           children: [
@@ -152,7 +143,8 @@ class _HomeState extends State<Home> {
                                 controller: inputcontroller,
                                 decoration: InputDecoration(
                                   border: OutlineInputBorder(),
-                                  hintText: "Type your topic here to get started.",
+                                  hintText:
+                                      "Type your topic here to get started.",
                                 ),
                                 onSubmitted: (_) => _navigateToSummary(),
                               ),
@@ -169,7 +161,7 @@ class _HomeState extends State<Home> {
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16),
                   child: Text(
-                    "Debate Bot isn't always accurate! Make sure you check before you do anything serious!",
+                    "Make sure to Check Debate Bot's Work!",
                     textAlign: TextAlign.center,
                   ),
                 ),
