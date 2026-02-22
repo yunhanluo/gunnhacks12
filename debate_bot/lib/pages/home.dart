@@ -71,7 +71,7 @@ class _HomeState extends State<Home> {
                           context,
                           MaterialPageRoute(
                             builder: (context) =>
-                              Summary(input: sideView == Side.aff ? "Affirmative on ${inputcontroller.text}" : "Negative on ${inputcontroller.text}"),
+                              Summary(input: sideView == Side.aff ? "Affirmative on '${inputcontroller.text}'" : "Negative on '${inputcontroller.text}'"),
                           ),
                         );
                       },
@@ -85,7 +85,7 @@ class _HomeState extends State<Home> {
                         context,
                         MaterialPageRoute(
                           builder: (context) =>
-                              Summary(input: sideView == Side.aff ? "Affirmative on ${inputcontroller.text}" : "Negative on ${inputcontroller.text}"),
+                              Summary(input: sideView == Side.aff ? "Affirmative on '${inputcontroller.text}'" : "Negative on '${inputcontroller.text}'"),
                         ),
                       );
                     },
