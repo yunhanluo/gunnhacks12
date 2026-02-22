@@ -40,19 +40,7 @@ class _HomeState extends State<Home> {
             SizedBox(height: 24),
 
             SizedBox(height: 8),
-            Spacer(),
-            Row(
-              children: [
-                SizedBox(width: 16),
-                Text("Need inspiration? Try one of these!", style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey[600])),
-                SizedBox(width: 16),
-                _topicChip("School uniforms should be mandatory"),
-                _topicChip("Social media does more harm than good"),
-                _topicChip("College education should be free"),
-                _topicChip("Space exploration is worth the cost"),
-                _topicChip("Homework should be abolished"),
-              ],
-            ),
+            
             Text(
               "Debate With AI!",
               style: TextStyle(
@@ -61,13 +49,28 @@ class _HomeState extends State<Home> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            Spacer(),
             Image.asset(
               'assets/images/robot-bot-black-icon.png',
               height: 350,
               fit: BoxFit.contain,
             ),
-            SizedBox(height: 60),
+            Spacer(),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              padding: EdgeInsets.symmetric(horizontal: 24),
+              child: Row(
+                children: [
+                  Text("Need inspiration? Try one of these!", style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey[600])),
+                  SizedBox(width: 16),
+                  _topicChip("School uniforms should be mandatory"),
+                  _topicChip("Social media should be banned"),
+                  _topicChip("College education should be free"),
+                  _topicChip("Space exploration is worth the cost"),
+                  _topicChip("Homework should be abolished"),
+                ],
+              ),
+            ),
+            
             Padding(
               padding: EdgeInsets.all(8),
               child: Row(
