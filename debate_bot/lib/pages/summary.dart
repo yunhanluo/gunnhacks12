@@ -60,6 +60,7 @@ class _SummaryState extends State<Summary> {
   @override
   void initState() {
     super.initState();
+
     _fetchpoints_response();
     _fetchtitle_response();
     _fetchoutline_response();
@@ -135,11 +136,47 @@ class _SummaryState extends State<Summary> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              child: Column(
-                children: [
-                  SizedBox(
-                    width: double.infinity,
-                    child: Card(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    SizedBox(
+                      width: double.infinity,
+                      child: Card(
+                        elevation: 0,
+                        color: Theme.of(context).colorScheme.inversePrimary,
+                        child: Padding(
+                          padding: EdgeInsets.all(8),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("Topic", style: TextStyle(fontSize: 20)),
+                              Text(widget.input),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: Card(
+                        elevation: 0,
+                        color: Theme.of(context).colorScheme.inversePrimary,
+                        child: Padding(
+                          padding: EdgeInsets.all(8),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("Points", style: TextStyle(fontSize: 20)),
+                              points_response != "NOTRESPONDED"
+                                  ? Text(points_response)
+                                  : LinearProgressIndicator(),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox.square(dimension: 8),
+                    Card(
                       elevation: 0,
                       color: Theme.of(context).colorScheme.inversePrimary,
                       child: Padding(
@@ -147,59 +184,23 @@ class _SummaryState extends State<Summary> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text("Topic", style: TextStyle(fontSize: 20)),
-                            Text(widget.input),
+                            Text(
+                              "Current Standing",
+                              style: TextStyle(fontSize: 30),
+                            ),
+                            MeterArea(),
                           ],
                         ),
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    width: double.infinity,
-                    child: Card(
-                      elevation: 0,
-                      color: Theme.of(context).colorScheme.inversePrimary,
-                      child: Padding(
-                        padding: EdgeInsets.all(8),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text("Points", style: TextStyle(fontSize: 20)),
-                            response != "NOTRESPONDED"
-                                ? Text(response)
-                                : LinearProgressIndicator(),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             Expanded(
               child: Padding(
                 padding: EdgeInsets.all(8),
-                child: Expanded(
-                  child: ChatArea(
-                    topic: widget.input,
-                    rawTopic: widget.rawInput,
-                  ),
-                ),
-              ),
-            ),
-            SizedBox.square(dimension: 8),
-            Card(
-              elevation: 0,
-              color: Theme.of(context).colorScheme.inversePrimary,
-              child: Padding(
-                padding: EdgeInsets.all(8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Current Standing", style: TextStyle(fontSize: 30)),
-                    MeterArea(),
-                  ],
-                ),
+                child: ChatArea(topic: widget.input, rawTopic: widget.rawInput),
               ),
             ),
           ],

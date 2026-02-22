@@ -117,6 +117,7 @@ class _ChatAreaState extends State<ChatArea> {
                   Format your response as a JSON strnig with "response" containing your response to the user's debate argument and "successPercentage" containing a 0-100 number detailing how well you think the user is doing in the debate.""".replaceAll('\n', ' '),
               // userMessage: getChatHistory(),
               userMessages: _messages,
+              penalty: 1,
               responseFormat: {
                 // 'json_schema': {
                 //   'name': 'Response and User Standing Percentage',
