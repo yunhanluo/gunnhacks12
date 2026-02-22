@@ -15,9 +15,12 @@ class Home extends StatefulWidget {
 
 enum Side { aff, neg }
 
+const _difficultyOptions = ['easy', 'intermediate', 'advanced'];
+
 class _HomeState extends State<Home> {
   final inputcontroller = TextEditingController();
   Side sideView = Side.aff;
+  String _difficulty = _difficultyOptions[2]; // default: 'advanced'
 
   List<Widget>? _topics;
 
@@ -142,6 +145,8 @@ class _HomeState extends State<Home> {
     if (inputcontroller.text.trim().isEmpty) return;
 
     MeterDataHolder().setUserRating(50);
+    final difficultyStr =
+        _difficulty[0].toUpperCase() + _difficulty.substring(1);
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -150,6 +155,7 @@ class _HomeState extends State<Home> {
               ? "Affirmative on '${inputcontroller.text}'"
               : "Negative on '${inputcontroller.text}'",
           rawInput: inputcontroller.text,
+          difficulty: difficultyStr,
         ),
       ),
     );
@@ -242,17 +248,40 @@ class _HomeState extends State<Home> {
                             SizedBox(height: 8),
                             Row(
                               children: [
-                                Expanded(
-                                  child: TextField(
-                                    controller: inputcontroller,
-                                    decoration: InputDecoration(
-                                      border: OutlineInputBorder(),
-                                      hintText: "Type your topic here.",
+                                Flexible(
+                                  child: ConstrainedBox(
+                                    constraints: BoxConstraints(maxWidth: 220),
+                                    child: TextField(
+                                      controller: inputcontroller,
+                                      decoration: InputDecoration(
+                                        border: OutlineInputBorder(),
+                                        hintText: "Type your topic here.",
+                                      ),
+                                      onSubmitted: (_) => _navigateToSummary(),
                                     ),
-                                    onSubmitted: (_) => _navigateToSummary(),
                                   ),
                                 ),
                                 SizedBox(width: 8),
+                                SizedBox(
+                                  width: 200,
+                                  child: DropdownButton<String>(
+                                    value: _difficulty,
+                                    isExpanded: true,
+                                    items: _difficultyOptions
+                                        .map(
+                                          (d) => DropdownMenuItem(
+                                            value: d,
+                                            child: Text(
+                                              d[0].toUpperCase() +
+                                                  d.substring(1),
+                                            ),
+                                          ),
+                                        )
+                                        .toList(),
+                                    onChanged: (v) =>
+                                        setState(() => _difficulty = v!),
+                                  ),
+                                ),
                                 IconButton(
                                   icon: Icon(Icons.send),
                                   onPressed: _navigateToSummary,
@@ -265,7 +294,8 @@ class _HomeState extends State<Home> {
                           children: [
                             _buildSegmentedButton(isNarrow),
                             SizedBox(width: 8),
-                            Expanded(
+                            ConstrainedBox(
+                              constraints: BoxConstraints(maxWidth: 800),
                               child: TextField(
                                 controller: inputcontroller,
                                 decoration: InputDecoration(
@@ -274,6 +304,26 @@ class _HomeState extends State<Home> {
                                       "Type your topic here to get started.",
                                 ),
                                 onSubmitted: (_) => _navigateToSummary(),
+                              ),
+                            ),
+                            SizedBox(width: 100),
+                            SizedBox(
+                              width: 160,
+                              child: DropdownButton<String>(
+                                value: _difficulty,
+                                isExpanded: true,
+                                items: _difficultyOptions
+                                    .map(
+                                      (d) => DropdownMenuItem(
+                                        value: d,
+                                        child: Text(
+                                          d[0].toUpperCase() + d.substring(1),
+                                        ),
+                                      ),
+                                    )
+                                    .toList(),
+                                onChanged: (v) =>
+                                    setState(() => _difficulty = v!),
                               ),
                             ),
                             SizedBox(width: 8),
