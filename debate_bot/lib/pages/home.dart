@@ -47,12 +47,12 @@ class _HomeState extends State<Home> {
       segments: const <ButtonSegment<Side>>[
         ButtonSegment<Side>(
           value: Side.aff,
-          label: Text('Affirmative'),
+          label: Text('Affirmative', style: TextStyle(fontSize: 16)),
           icon: Icon(Icons.thumb_up_outlined),
         ),
         ButtonSegment<Side>(
           value: Side.neg,
-          label: Text('Negative'),
+          label: Text('Negative', style: TextStyle(fontSize: 16)),
           icon: Icon(Icons.thumb_down_outlined),
         ),
       ],
@@ -79,6 +79,11 @@ class _HomeState extends State<Home> {
             child: Column(
               children: [
                 SizedBox(height: 24),
+                Image.asset(
+                  'assets/images/robot-bot-black-icon.png',
+                  height: isNarrow ? 150 : 350,
+                  fit: BoxFit.contain,
+                ),
                 Text(
                   "Welcome to Debate Bot",
                   style: TextStyle(
@@ -93,11 +98,7 @@ class _HomeState extends State<Home> {
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(height: 16),
-                Image.asset(
-                  'assets/images/robot-bot-black-icon.png',
-                  height: isNarrow ? 150 : 350,
-                  fit: BoxFit.contain,
-                ),
+
                 Spacer(),
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
