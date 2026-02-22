@@ -22,11 +22,12 @@ class _HomeState extends State<Home> {
       ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Text("Welcome to our Debate Bot for GunnHaXII!"),
+
             Spacer(),
             Padding(
-              padding: EdgeInsets.all(4),
+              padding: EdgeInsets.all(8),
               child: Row(
                 children: [
                   Expanded(
@@ -34,10 +35,20 @@ class _HomeState extends State<Home> {
                       controller: inputcontroller,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
-                        hintText: "Let's get started!",
+                        hintText: "Let's get started! Type your topic here to continue.",
                       ),
+                      onSubmitted: (_) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                Summary(input: inputcontroller.text),
+                          ),
+                        );
+                      },
                     ),
                   ),
+                  SizedBox(width: 8),
                   IconButton(
                     icon: Icon(Icons.send),
                     onPressed: () {
@@ -53,7 +64,7 @@ class _HomeState extends State<Home> {
                 ],
               ),
             ),
-            Text("Debate Bot"),
+            Text("Debate Bot isn't always accurate! Make sure you check before you do!"),
             Padding(padding: EdgeInsets.all(4)),
           ],
         ),
