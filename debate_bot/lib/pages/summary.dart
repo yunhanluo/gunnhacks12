@@ -206,27 +206,6 @@ class _SummaryState extends State<Summary> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("Topic", style: TextStyle(fontSize: 20)),
-                              title_response == "NOTRESPONDED"
-                                  ? LinearProgressIndicator()
-                                  : Text(title_response),
-                              Text(widget.input),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox.square(dimension: 8),
-                    SizedBox(
-                      width: double.infinity,
-                      child: Card(
-                        elevation: 0,
-                        color: Theme.of(context).colorScheme.inversePrimary,
-                        child: Padding(
-                          padding: EdgeInsets.all(8),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
                               Text(
                                 "Current Standing",
                                 style: TextStyle(fontSize: 30),
