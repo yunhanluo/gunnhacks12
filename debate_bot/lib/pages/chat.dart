@@ -212,16 +212,16 @@ class Message extends StatelessWidget {
                 : Alignment.centerRight),
       child: ConstrainedBox(
         constraints: BoxConstraints(
-          maxWidth: MediaQuery.sizeOf(context).width - 700,
+          maxWidth: MediaQuery.sizeOf(context).width * 0.7,
         ),
         child: Card(
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(sender == Sender.human ? 0 : 8),
-              topRight: Radius.circular(sender == Sender.ai ? 0 : 8),
-              bottomLeft: Radius.circular(8),
-              bottomRight: Radius.circular(8),
+              topLeft: Radius.circular(sender == Sender.human ? 6 : 16),
+              topRight: Radius.circular(sender == Sender.ai ? 6 : 16),
+              bottomLeft: Radius.circular(16),
+              bottomRight: Radius.circular(16),
             ),
           ),
           color: Theme.of(context).colorScheme.inversePrimary,

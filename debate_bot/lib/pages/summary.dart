@@ -149,126 +149,104 @@ class _SummaryState extends State<Summary> {
           "Dashboard - ${title_response == "NOTRESPONDED" ? widget.input : title_response}",
         ),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(8),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    SizedBox(
-                      width: double.infinity,
-                      child: Card(
-                        elevation: 0,
-                        color: Theme.of(context).colorScheme.inversePrimary,
-                        child: Padding(
-                          padding: EdgeInsets.all(8),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text("Topic", style: TextStyle(fontSize: 20)),
-                              Text(widget.input),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: double.infinity,
-                      child: Card(
-                        elevation: 0,
-                        color: Theme.of(context).colorScheme.inversePrimary,
-                        child: Padding(
-                          padding: EdgeInsets.all(8),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text("Points", style: TextStyle(fontSize: 20)),
-                              points_response != "NOTRESPONDED"
-                                  ? Text(points_response)
-                                  : LinearProgressIndicator(),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: double.infinity,
-                      child: Card(
-                        elevation: 0,
-                        color: Theme.of(context).colorScheme.inversePrimary,
-                        child: Padding(
-                          padding: EdgeInsets.all(8),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Speech Outline",
-                                style: TextStyle(fontSize: 20),
-                              ),
-                              outline_response != "NOTRESPONDED"
-                                  ? Text(outline_response)
-                                  : LinearProgressIndicator(),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: double.infinity,
-                      child: Card(
-                        elevation: 0,
-                        color: Theme.of(context).colorScheme.inversePrimary,
-                        child: Padding(
-                          padding: EdgeInsets.all(8),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Opposing Points and Their Rebuttals",
-                                style: TextStyle(fontSize: 20),
-                              ),
-                              rebuttal_response != "NOTRESPONDED"
-                                  ? Text(rebuttal_response)
-                                  : LinearProgressIndicator(),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: double.infinity,
-                      child: Card(
-                        elevation: 0,
-                        color: Theme.of(context).colorScheme.inversePrimary,
-                        child: Padding(
-                          padding: EdgeInsets.all(8),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Current Standing",
-                                style: TextStyle(fontSize: 30),
-                              ),
-                              MeterArea(),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final isNarrow = constraints.maxWidth < 500;
+          final infoCards = [
+            _buildCard(context, "Topic", Text(widget.input)),
+            _buildCard(
+              context,
+              "Points",
+              points_response != "NOTRESPONDED"
+                  ? Text(points_response)
+                  : LinearProgressIndicator(),
+            ),
+            _buildCard(
+              context,
+              "Speech Outline",
+              outline_response != "NOTRESPONDED"
+                  ? Text(outline_response)
+                  : LinearProgressIndicator(),
+            ),
+            _buildCard(
+              context,
+              "Opposing Points and Their Rebuttals",
+              rebuttal_response != "NOTRESPONDED"
+                  ? Text(rebuttal_response)
+                  : LinearProgressIndicator(),
+            ),
+            _buildCard(
+              context,
+              "Current Standing",
+              Column(
+                children: [SizedBox(height: 8), MeterArea()],
+              ),
+            ),
+          ];
+
+          if (isNarrow) {
+            return Column(
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.all(8),
+                    child: Column(children: infoCards),
+                  ),
                 ),
-              ),
+                SizedBox(
+                  height: constraints.maxHeight * 0.45,
+                  child: Padding(
+                    padding: EdgeInsets.all(8),
+                    child: ChatArea(
+                      topic: widget.input,
+                      rawTopic: widget.rawInput,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          }
+
+          return Padding(
+            padding: EdgeInsets.all(8),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(children: infoCards),
+                  ),
+                ),
+                Expanded(
+                  child: ChatArea(
+                    topic: widget.input,
+                    rawTopic: widget.rawInput,
+                  ),
+                ),
+              ],
             ),
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.all(8),
-                child: ChatArea(topic: widget.input, rawTopic: widget.rawInput),
-              ),
-            ),
-          ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildCard(BuildContext context, String title, Widget content) {
+    return SizedBox(
+      width: double.infinity,
+      child: Card(
+        elevation: 0,
+        color: Theme.of(context).colorScheme.inversePrimary,
+        child: Padding(
+          padding: EdgeInsets.all(8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, style: TextStyle(fontSize: 20)),
+              content,
+            ],
+          ),
         ),
       ),
     );
