@@ -41,9 +41,15 @@ Do not say: "Topic: <topic>, Difficulty: <difficulty>, Side: <side>". These thin
 ''';
 
 class Summary extends StatefulWidget {
-  const Summary({super.key, required this.input, required this.rawInput});
+  const Summary({
+    super.key,
+    required this.input,
+    required this.rawInput,
+    required this.difficulty,
+  });
 
   final String input;
+  final String difficulty;
   final String rawInput;
 
   @override
