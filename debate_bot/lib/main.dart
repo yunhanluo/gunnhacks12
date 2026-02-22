@@ -19,8 +19,8 @@ class MyApp extends StatelessWidget {
       title: 'Debate Bot (GunnHaXII)',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Color.fromARGB(255, 0, 0, 0),
-          brightness: Brightness.dark,
+          seedColor: Colors.deepPurple,
+          brightness: Brightness.light,
         ),
         //scaffoldBackgroundColor: Colors.black,
       ),
