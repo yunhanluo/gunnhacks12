@@ -3,10 +3,11 @@ import 'package:debate_bot/services/openai_service.dart';
 import 'package:flutter/material.dart';
 
 class ChatArea extends StatefulWidget {
-  const ChatArea({super.key, required this.topic, required this.rawTopic});
+  const ChatArea({super.key, required this.topic, required this.rawTopic, required this.difficulty});
 
   final String topic;
   final String rawTopic;
+  final String difficulty;
 
   @override
   State<ChatArea> createState() => _ChatAreaState();
@@ -123,7 +124,7 @@ class _ChatAreaState extends State<ChatArea> {
               systemMessage:
                   """You are a debate bot that encourages critical thinking through debates. You are debating against a user about ${widget.topic}.
                   They are taking the stance of ${widget.topic.replaceFirst(widget.rawTopic, "").contains("Affirm") ? "yes" : "no"}.
-                  Your task is to argue against the opponent concisely. You must not exceed one paragraph. Always argue against the opponent.
+                  Your task is to argue against the opponent concisely. You must not exceed ${widget.difficulty == "Easy" || widget.difficulty == "Intermediate" ? "one paragraph" : "two paragraphs"}. Always argue against the opponent.
                   Sometimes the user may ask you a question about the topic. In that case, please answer.
                   When the user is ready to debate, just smoothly transition into debate mode.
                   On the other hand, if the user is being unproductive or not making any relevant points, do not respond by restating your arguments. Instead, try to steer them back onto the conversation.
@@ -140,6 +141,7 @@ class _ChatAreaState extends State<ChatArea> {
                   (Some common logical fallacies are: Ad Hominem, Straw Man, False Dilemma (False Dichotomy), Circular Reasoning (Begging the Question), Appeal to Popularity (Bandwagon), Slippery Slope, Hasty Generalization, Appeal to Emotion, Red Herring, False Cause (Post Hoc / Correlation ≠ Causation). 
                   Keep these in mind as you respond. It is extremely important to be as constructive as possible when it is obvious that the user is not doing well in the debate.)
                   Also make sure the user is debating on their side.
+                  You should be an ${widget.difficulty.toLowerCase()} difficulty debate bot, so your points should be more or less easy to argue against. Additionally, change your user rating to match the difficulty.
                   """
                       .replaceAll('\n', ' '),
               // userMessage: getChatHistory(),

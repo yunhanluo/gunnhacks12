@@ -220,6 +220,7 @@ class _SummaryState extends State<Summary> {
                           child: ChatArea(
                             topic: widget.input,
                             rawTopic: widget.rawInput,
+                            difficulty: widget.difficulty,
                           ),
                         ),
                 ),
@@ -242,6 +243,7 @@ class _SummaryState extends State<Summary> {
                   child: ChatArea(
                     topic: widget.input,
                     rawTopic: widget.rawInput,
+                    difficulty: widget.difficulty,
                   ),
                 ),
               ],

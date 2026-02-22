@@ -15,7 +15,7 @@ class Home extends StatefulWidget {
 
 enum Side { aff, neg }
 
-const _difficultyOptions = ['easy', 'intermediate', 'advanced'];
+const _difficultyOptions = ['easy', 'intermediate', 'advanced', 'impossible'];
 
 class _HomeState extends State<Home> {
   final inputcontroller = TextEditingController();
