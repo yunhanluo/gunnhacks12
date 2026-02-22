@@ -19,10 +19,10 @@ class MyApp extends StatelessWidget {
       title: 'Debate Bot (GunnHaXII)',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.black,
-          primary: Colors.black,
-          onPrimary: Colors.white,
+          seedColor: Color.fromARGB(255, 0, 0, 0),
+          brightness: Brightness.dark,
         ),
+        //scaffoldBackgroundColor: Colors.black,
       ),
       initialRoute: '/',
       routes: {'/': (context) => const Home(title: 'Debate Bot')},

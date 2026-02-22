@@ -52,7 +52,6 @@ class Summary extends StatefulWidget {
 }
 
 class _SummaryState extends State<Summary> {
-  String response = "NOTRESPONDED";
   String title_response = "NOTRESPONDED";
   String points_response = "NOTRESPONDED";
   String outline_response = "NOTRESPONDED";
@@ -70,7 +69,7 @@ class _SummaryState extends State<Summary> {
     try {
       final result = await OpenAIService.askAI(
         systemMessage:
-            "You are to be a debate assistant. Please provide good debate points in the format - [point 1 goes here. just put the point directly in here, no prefixing or anything of that sort] \n - [point 2 goes here]\n... Please make the points concise but easily understandable. Aim for quantity, but please sort by quality as well.",
+            defaultInstructions, // or systemMessage: "You are a debate speech outline assistant. Given a debate topic and stance, produce a classically formatted speech outline with the following structure:\nI. Introduction\n   A. Hook\n   B. Thesis statement\nII. Body\n   A. First argument\n      1. Evidence/support\n   B. Second argument\n      1. Evidence/support\n   C. Third argument\n      1. Evidence/support\nIII. Rebuttal\n   A. Anticipated counterargument\n   B. Response\nIV. Conclusion\n   A. Summary\n   B. Closing statement\n\nKeep each point concise but clear.",
         userMessage: widget.input,
       );
       setState(() {
@@ -106,7 +105,7 @@ class _SummaryState extends State<Summary> {
     try {
       final result = await OpenAIService.askAI(
         systemMessage:
-            "You are a debate speech outline assistant. Given a debate topic and stance, produce a classically formatted speech outline with the following structure:\nI. Introduction\n   A. Hook\n   B. Thesis statement\nII. Body\n   A. First argument\n      1. Evidence/support\n   B. Second argument\n      1. Evidence/support\n   C. Third argument\n      1. Evidence/support\nIII. Rebuttal\n   A. Anticipated counterargument\n   B. Response\nIV. Conclusion\n   A. Summary\n   B. Closing statement\n\nKeep each point concise but clear.",
+            "You are to be a debate assistant. Please provide good debate points in the format - [point 1 goes here. just put the point directly in here, no prefixing or anything of that sort] \n - [point 2 goes here]\n... Please make the points concise but easily understandable. Aim for quantity, but please sort by quality as well.",
         userMessage: widget.input,
       );
       print(result["choices"][0]["message"]["content"]);
@@ -175,21 +174,66 @@ class _SummaryState extends State<Summary> {
                         ),
                       ),
                     ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: Card(
+                        elevation: 0,
+                        color: Theme.of(context).colorScheme.inversePrimary,
+                        child: Padding(
+                          padding: EdgeInsets.all(8),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Speech Outline",
+                                style: TextStyle(fontSize: 20),
+                              ),
+                              outline_response != "NOTRESPONDED"
+                                  ? Text(outline_response)
+                                  : LinearProgressIndicator(),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: Card(
+                        elevation: 0,
+                        color: Theme.of(context).colorScheme.inversePrimary,
+                        child: Padding(
+                          padding: EdgeInsets.all(8),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("Topic", style: TextStyle(fontSize: 20)),
+                              title_response == "NOTRESPONDED"
+                                  ? LinearProgressIndicator()
+                                  : Text(title_response),
+                              Text(widget.input),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                     SizedBox.square(dimension: 8),
-                    Card(
-                      elevation: 0,
-                      color: Theme.of(context).colorScheme.inversePrimary,
-                      child: Padding(
-                        padding: EdgeInsets.all(8),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Current Standing",
-                              style: TextStyle(fontSize: 30),
-                            ),
-                            MeterArea(),
-                          ],
+                    SizedBox(
+                      width: double.infinity,
+                      child: Card(
+                        elevation: 0,
+                        color: Theme.of(context).colorScheme.inversePrimary,
+                        child: Padding(
+                          padding: EdgeInsets.all(8),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Current Standing",
+                                style: TextStyle(fontSize: 30),
+                              ),
+                              MeterArea(),
+                            ],
+                          ),
                         ),
                       ),
                     ),
