@@ -12,7 +12,8 @@ class Summary extends StatefulWidget {
 }
 
 class _SummaryState extends State<Summary> {
-  String response = "Please give us one second while we process your request...";
+  String response =
+      "Please give us one second while we process your request...";
 
   @override
   void initState() {
@@ -23,11 +24,14 @@ class _SummaryState extends State<Summary> {
   Future<void> _fetchResponse() async {
     try {
       final result = await OpenAIService.askAI(
-        systemMessage: "You are to be a debate assistant. Please provide good debate points in the format - [point 1 goes here. just put the point directly in here, no prefixing or anything of that sort] \n - [point 2 goes here]\n... Please make the points concise but easily understandable. Aim for quantity, but please sort by quality as well.",
+        systemMessage:
+            "You are to be a debate assistant. Please provide good debate points in the format - [point 1 goes here. just put the point directly in here, no prefixing or anything of that sort] \n - [point 2 goes here]\n... Please make the points concise but easily understandable. Aim for quantity, but please sort by quality as well.",
         userMessage: widget.input,
       );
       setState(() {
-        response = result["choices"][0]["message"]["content"] ?? "We weren't able to get a response.";
+        response =
+            result["choices"][0]["message"]["content"] ??
+            "We weren't able to get a response.";
       });
     } catch (e) {
       setState(() {
@@ -39,6 +43,10 @@ class _SummaryState extends State<Summary> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text("Debate Bot"),
+      ),
       body: Padding(
         padding: EdgeInsets.all(8),
         child: Row(
@@ -84,7 +92,20 @@ class _SummaryState extends State<Summary> {
               ),
             ),
             Expanded(
-              child: ChatArea(),
+              child: Padding(
+                padding: EdgeInsets.all(8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 4),
+                    Text(
+                      "Ask a Follow-up Question",
+                      style: TextStyle(fontSize: 20),
+                    ),
+                    Expanded(child: ChatArea()),
+                  ],
+                ),
+              ),
             ),
           ],
         ),

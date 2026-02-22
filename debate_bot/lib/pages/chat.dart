@@ -25,13 +25,14 @@ class _ChatAreaState extends State<ChatArea> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        SizedBox(
-          width: MediaQuery.sizeOf(context).width,
-          height: MediaQuery.sizeOf(context).height - 108,
+        Expanded(
           child: ListView.builder(
             itemBuilder: (context, index) {
               if (index < _messages.length) {
-                return ListTile(title: _messages[index]);
+                return Align(
+                  alignment: Alignment.centerLeft,
+                  child: _messages[index],
+                );
               } else {
                 return null;
               }
@@ -48,7 +49,7 @@ class _ChatAreaState extends State<ChatArea> {
                   controller: inputController,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    hintText: "...",
+                    hintText: "Elaborate on your prompt!",
                   ),
                   onSubmitted: (_) => _processMessage(),
                   focusNode: inputFocus,
@@ -59,17 +60,27 @@ class _ChatAreaState extends State<ChatArea> {
             ],
           ),
         ),
-        Text(
-          "Debate Bot isn't always accurate! Make sure you check before you do!",
-        ),
-        Padding(padding: EdgeInsets.all(4)),
+        Text("Remember, Debate Bot isn't always accurate!"),
       ],
     );
   }
 
   void _processMessage() {
     setState(() {
-      _messages.add(Text(inputController.text));
+      _messages.add(
+        Card(
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          
+          ),
+          color: Theme.of(context).colorScheme.inversePrimary,
+          child: Padding(
+            padding: EdgeInsets.all(8),
+            child: Text(inputController.text),
+          ),
+        ),
+      );
 
       inputController.text = "";
       inputFocus.requestFocus();
