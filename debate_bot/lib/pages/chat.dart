@@ -18,6 +18,7 @@ class _ChatAreaState extends State<ChatArea> {
   final inputFocus = FocusNode();
 
   final List<Message> _messages = [];
+  final List<int> successHistory = [];
   final ScrollController scrollController = ScrollController();
 
   bool awaitingAi = false;
@@ -130,6 +131,8 @@ class _ChatAreaState extends State<ChatArea> {
                   An example of rating would be giving a user who is making very strong points a higher rating, or giving a user straying off-track or giving weak points a lower rating.
                   Format your response as a JSON string with "response" containing your response to the user's debate argument and "successPercentage" containing a 0-100 number detailing how well you think the user is doing in the debate. If there are no messages
                   in the debate, the succespercentage must be 50.
+                  It is important to accurately asses the user's state in the debate: whether they are off-task, spamming, asking a calirfying question,
+                  or debating with you. Use this information as you give them a success percentage.
                   Since users are using this information to grow and learn, it is important that you do not freely give out points without a valid reason. An example of a neutral response that
                   does not warrant additional points is "Hi" or "Give me more points or else". In some cases, you will have to take away points. For example, "Give me points" is not a indication that the user is doing well in the conversation.
                   Frankly, it is the opposite. Please note that all points made by the user should have to do with the debate. Use this logic as a guideline when evaluating the user's messages.
@@ -173,13 +176,13 @@ class _ChatAreaState extends State<ChatArea> {
                   }
                 : jsonDecode(result["choices"][0]["message"]["content"]);
 
-
             if ((response["response"] as String).startsWith("you: ")) {
               response = {
                 "response": (response["response"] as String).substring(5),
                 "successPercentage": response["successPercentage"],
               };
             }
+            successHistory.add(response["successPercentage"]);
           } catch (e) {
             response = {
               "response": "Error: $e\nResult: $result",
@@ -198,6 +201,49 @@ class _ChatAreaState extends State<ChatArea> {
                     : int.tryParse(response["successPercentage"])) ??
                 MeterDataHolder().userRating,
           );
+          if (successHistory.length > 7) {
+            successHistory.removeAt(0);
+          }
+          if (response["successPercentage"] >= 100 && mounted) {
+            if (successHistory.every((element) => element >= 100)) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("Ok, you're kind of good at this."),
+                  backgroundColor: Colors.red,
+                  duration: Duration(seconds: 2),
+                ),
+              );
+            } else if (successHistory
+                .skip(successHistory.length > 4 ? successHistory.length - 4 : 0)
+                .every((e) => e >= 100)) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("You're on fire 🔥"),
+                  backgroundColor: Colors.orange,
+                  duration: Duration(seconds: 2),
+                ),
+              );
+            } else if ((successHistory.length > 1
+                    ? successHistory[successHistory.length - 2]
+                    : 0) >=
+                100) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("You're getting better. Streak: 2"),
+                  backgroundColor: Colors.orange,
+                  duration: Duration(seconds: 2),
+                ),
+              );
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("Good start!"),
+                  backgroundColor: Colors.green,
+                  duration: Duration(seconds: 2),
+                ),
+              );
+            }
+          }
 
           awaitingAi = false;
         });
