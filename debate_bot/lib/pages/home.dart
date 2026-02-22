@@ -219,11 +219,19 @@ class _HomeState extends State<Home> {
                 ),
 
                 Spacer(),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  padding: EdgeInsets.symmetric(horizontal: 8),
-                  child: Row(children: _topics ?? [LinearProgressIndicator()]),
+                ScrollConfiguration(
+                  behavior: ScrollConfiguration.of(
+                    context,
+                  ).copyWith(overscroll: false),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    padding: EdgeInsets.symmetric(horizontal: 8),
+                    child: Row(
+                      children: _topics ?? [LinearProgressIndicator()],
+                    ),
+                  ),
                 ),
+                SizedBox(height: 8),
                 !isNarrow ? SizedBox(height: 8) : SizedBox(height: 0),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 8),
@@ -316,7 +324,14 @@ class _HomeState extends State<Home> {
     return Row(
       children: [
         ActionChip(
-          label: Icon(Icons.casino_outlined, size: 20),
+          label: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.casino_outlined, size: 20),
+              SizedBox(width: 4),
+              Text("I'm Feeling Lucky"),
+            ],
+          ),
           onPressed: () {
             try {
               ActionChip target =
