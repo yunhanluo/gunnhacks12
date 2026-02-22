@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:debate_bot/services/openai_service.dart';
 import 'package:flutter/material.dart';
 
@@ -97,28 +99,42 @@ class _ChatAreaState extends State<ChatArea> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
         Future.delayed(Duration(milliseconds: 10), () async {
-          String response = "";
+          Map<String, dynamic> response;
 
           try {
             final result = await OpenAIService.askAI(
               systemMessage:
-                  "You are debating against a user about ${widget.topic}. They are taking the stance of ${widget.topic.replaceFirst(widget.rawTopic, "").contains("Affirm") ? "yes" : "no"}. You will be given the entire chat history, where the opponent is labeled \"opponent\" and you are labeled \"you\". Your task is to argue against the opponent, but try not to respond with multiple paragraphs. Instead, respond with at most one paragraph, and try to keep the conversation on track and always argue against the opponent.",
+                  "You are debating against a user about ${widget.topic}. They are taking the stance of ${widget.topic.replaceFirst(widget.rawTopic, "").contains("Affirm") ? "yes" : "no"}. You will be given the entire chat history, where the opponent is labeled \"opponent\" and you are labeled \"you\". Your task is to argue against the opponent, but try not to respond with multiple paragraphs. Instead, respond with at most one paragraph, and try to keep the conversation on track and always argue against the opponent. Format your response in a JSON with the key \"response\" containing your response and the key \"successPercentage\" containing a number from 0-100 detailing how well you think your opponent is doing in the debate.",
               userMessage: getChatHistory(),
             );
 
-            response =
-                result["choices"][0]["message"]["content"] ??
-                "We weren't able to get a response.";
+            response = result["choices"][0]["message"]["content"] == null
+                ? {
+                    "response": "We weren't able to get a response.",
+                    "successPercentage": _MeterDataHolder().userRating,
+                  }
+                : jsonDecode(result["choices"][0]["message"]["content"]);
 
-            if (response.startsWith("you: ")) {
-              response = response.substring(5);
+            if ((response["response"] as String).startsWith("you: ")) {
+              response = {
+                "response": (response["response"] as String).substring(5),
+                "successPercentage": response["successPercentage"],
+              };
             }
           } catch (e) {
-            response = "Error: $e";
+            response = {
+              "response": "Error: $e",
+              "successPercentage": _MeterDataHolder().userRating,
+            };
           }
 
-          _addMessage(response, _Sender.ai);
+          _addMessage(response["response"], _Sender.ai);
           // _addMessage(getChatHistory(), _Sender.other);
+
+          _MeterDataHolder().setUserRating(
+            (response["successPercentage"] is int ? response["successPercentage"] : int.tryParse(response["successPercentage"])) ??
+                _MeterDataHolder().userRating,
+          );
 
           awaitingAi = false;
         });
@@ -181,32 +197,71 @@ class MeterArea extends StatefulWidget {
 }
 
 class _MeterAreaState extends State<MeterArea> {
-  int percentage1 = 50;
-
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
+      spacing: 30,
       children: [
-        Row(
-          children: [
-            Text("How well you are doing: "),
-            SizedBox.square(dimension: 8),
-            LinearProgressIndicator(value: percentage1 / 100, minHeight: 35),
-          ],
+        ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: 40),
+          child: Row(
+            spacing: 8,
+            children: [
+              SizedBox.square(dimension: 2),
+              SizedBox(width: 100, child: Text("How well you are doing: ")),
+              Expanded(
+                child: ListenableBuilder(
+                  listenable: _MeterDataHolder(),
+                  builder: (context, child) {
+                    return LinearProgressIndicator(
+                      value: _MeterDataHolder().userRating / 100,
+                      minHeight: 35,
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
-        SizedBox.square(dimension: 30),
-        Row(
-          children: [
-            Text("How well AI is doing: "),
-            SizedBox.square(dimension: 8),
-            LinearProgressIndicator(
-              value: 1 - percentage1 / 100,
-              minHeight: 35,
-            ),
-          ],
+        ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: 40),
+          child: Row(
+            spacing: 8,
+            children: [
+              SizedBox.square(dimension: 2),
+              SizedBox(width: 100, child: Text("How well AI is doing: ")),
+              Expanded(
+                child: ListenableBuilder(
+                  listenable: _MeterDataHolder(),
+                  builder: (context, child) {
+                    return LinearProgressIndicator(
+                      value: 1 - _MeterDataHolder().userRating / 100,
+                      minHeight: 35,
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ],
     );
+  }
+}
+
+class _MeterDataHolder with ChangeNotifier {
+  static final _MeterDataHolder _instance = _MeterDataHolder._internal();
+  factory _MeterDataHolder() => _instance;
+
+  _MeterDataHolder._internal();
+
+  int _progressBar1 = 50;
+
+  int get userRating => _progressBar1;
+
+  void setUserRating(int newRating) {
+    _progressBar1 = newRating;
+    notifyListeners();
   }
 }

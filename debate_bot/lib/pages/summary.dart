@@ -106,7 +106,7 @@ class _SummaryState extends State<Summary> {
                     ),
                   ),
                   SizedBox.square(dimension: 12),
-                  Expanded(child: MeterArea()),
+                  MeterArea()
                 ],
               ),
             ),
