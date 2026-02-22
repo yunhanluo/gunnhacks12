@@ -172,3 +172,41 @@ class _Message extends StatelessWidget {
 }
 
 enum _Sender { human, ai, system }
+
+class MeterArea extends StatefulWidget {
+  const MeterArea({super.key});
+
+  @override
+  State<StatefulWidget> createState() => _MeterAreaState();
+}
+
+class _MeterAreaState extends State<MeterArea> {
+  int percentage1 = 50;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Row(
+          children: [
+            Text("How well you are doing: "),
+            SizedBox.square(dimension: 8),
+            LinearProgressIndicator(value: percentage1 / 100, minHeight: 35),
+          ],
+        ),
+        SizedBox.square(dimension: 30),
+        Row(
+          children: [
+            Text("How well AI is doing: "),
+            SizedBox.square(dimension: 8),
+            LinearProgressIndicator(
+              value: 1 - percentage1 / 100,
+              minHeight: 35,
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
