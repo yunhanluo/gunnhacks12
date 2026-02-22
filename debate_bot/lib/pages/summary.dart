@@ -31,14 +31,10 @@ However, they should not exceed 250 words each.
 An example of your inputs: Topic: "Should the death penalty be abolished?", "Difficulty: "intermediate," Side: "Affirmative" 
 
 (Default topic: "Is cheese a fruit?")
-(Default difficulty: "easy")
+(Default difficulty: "Advanced")
 (Default side: "Affirmative").
 You use these inputs for your output. Go through the logic. Please do not simply return the inputs.
 Use these defaults only if the corresponding value is not provided. Please do not include any starting information like "Given these inputs,." This is not good.
-''';
-
-const String thePrompt = '''
-The task is simple. Return the word: "Cheese is a chicken."
 ''';
 
 class Summary extends StatefulWidget {
@@ -90,7 +86,7 @@ class _SummaryState extends State<Summary> {
     try {
       final result = await OpenAIService.askAI(
         systemMessage:
-            "Please provide a very, very short summary of the debate topic. Include the aff/neg stance by adding it at the beginning (either 'Affirmative', or 'Negative'), followed by a colon, then the rest of the summary. Make sure to be precise, around 5 words max. Don't say anything like 'arguing for/against... topic', just say the topic. Please make it title format, and do NOT add a period.",
+            "Please provide a very, very short summary of the debate topic. Include the aff/neg stance by adding it at the beginning (either 'Affirmative', or 'Negative'), followed by a colon, then the rest of the summary. Make sure to be precise, around 5 words max. Don't say anything like 'arguing for/against... topic', just say the topic. Please make it title format, and do NOT add a period. Make sure to capitalize the letters in strict title case.",
         userMessage: widget.input,
       );
       setState(() {
@@ -111,7 +107,7 @@ class _SummaryState extends State<Summary> {
             "Please create a speech outline for the given input. It should have enough points to be 7 minutes. Please make it classic style (intro -> body (x paragraphs) -> conclusion)",
         userMessage: widget.input,
       );
-      print(result["choices"][0]["message"]["content"]);
+      //print(result["choices"][0]["message"]["content"]);
       setState(() {
         outline_response =
             result["choices"][0]["message"]["content"] ?? "NOTRESPONDED";
@@ -198,9 +194,7 @@ class _SummaryState extends State<Summary> {
             _buildCard(
               context,
               "Current Standing",
-              Column(
-                children: [SizedBox(height: 8), MeterArea()],
-              ),
+              Column(children: [SizedBox(height: 8), MeterArea()]),
             ),
           ];
 

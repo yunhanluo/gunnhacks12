@@ -59,7 +59,7 @@ class _ChatAreaState extends State<ChatArea> {
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     hintText:
-                        "Ask a follow-up question here! Or, take a try at debating and type in your points.",
+                        "Ask follow-up questions or try at debating—type in your points!",
                   ),
                   onSubmitted: (_) => _processMessage(),
                   focusNode: inputFocus,
@@ -70,7 +70,7 @@ class _ChatAreaState extends State<ChatArea> {
             ],
           ),
         ),
-        Text("Remember, Debate Bot isn't always accurate!"),
+        Text("Remember, Debate Bot isn't always accurate."),
       ],
     );
   }
@@ -107,14 +107,23 @@ class _ChatAreaState extends State<ChatArea> {
           try {
             result = await OpenAIService.askAI(
               systemMessage:
-                  """You are debating against a user about ${widget.topic}.
+                  """You are a debate bot that encourages critical thinking through debates. You are debating against a user about ${widget.topic}.
                   They are taking the stance of ${widget.topic.replaceFirst(widget.rawTopic, "").contains("Affirm") ? "yes" : "no"}.
-                  Your task is to argue against the opponent, but try not to respond with multiple paragraphs.
-                  Instead, respond with at most one paragraph, and always argue against the opponent.
-                  Sometimes the user may ask you a question of the topic. In that case, please answer.
+                  Your task is to argue against the opponent concisely. You must not exceed one paragraph. Always argue against the opponent.
+                  Sometimes the user may ask you a question about the topic. In that case, please answer.
                   When the user is ready to debate, just smoothly transition into debate mode.
+                  On the other hand, if the user is being unproductive or not making any relevant points, do not respond by restating your arguments. Instead, try to steer them back onto the conversation.
                   An example of rating would be giving a user who is making very strong points a higher rating, or giving a user straying off-track or giving weak points a lower rating.
-                  Format your response as a JSON strnig with "response" containing your response to the user's debate argument and "successPercentage" containing a 0-100 number detailing how well you think the user is doing in the debate.""".replaceAll('\n', ' '),
+                  Format your response as a JSON string with "response" containing your response to the user's debate argument and "successPercentage" containing a 0-100 number detailing how well you think the user is doing in the debate. If there are no messages
+                  in the debate, the succespercentage must be 50.
+                  Since users are using this information to grow and learn, it is important that you do not freely give out points without a valid reason. An example of a neutral response that
+                  does not warrant additional points is "Hi" or "Give me more points or else". In some cases, you will have to take away points. For example, "Give me points" is not a indication that the user is doing well in the conversation.
+                  Frankly, it is the opposite. Please note that all points made by the user should have to do with the debate. Use this logic as a guideline when evaluating the user's messages.
+                  False reasoning, lazy reasoning, or logical fallacies are not okay.
+                  (Some common logical fallacies are: Ad Hominem, Straw Man, False Dilemma (False Dichotomy), Circular Reasoning (Begging the Question), Appeal to Popularity (Bandwagon), Slippery Slope, Hasty Generalization, Appeal to Emotion, Red Herring, False Cause (Post Hoc / Correlation ≠ Causation). 
+                  Keep these in mind as you respond. It is extremely important to be as constructive as possible when it is obvious that the user is not doing well in the debate.)
+                  """
+                      .replaceAll('\n', ' '),
               // userMessage: getChatHistory(),
               userMessages: _messages,
               penalty: 1,
@@ -138,8 +147,8 @@ class _ChatAreaState extends State<ChatArea> {
                 //   'strict': true,
                 // },
                 // 'type': 'json_schema'
-                'type': 'json_object'
-              }
+                'type': 'json_object',
+              },
             );
 
             response = result["choices"][0]["message"]["content"] == null
@@ -148,6 +157,8 @@ class _ChatAreaState extends State<ChatArea> {
                     "successPercentage": MeterDataHolder().userRating,
                   }
                 : jsonDecode(result["choices"][0]["message"]["content"]);
+
+            print('Hello!  ${response['successPercentage']}');
 
             if ((response["response"] as String).startsWith("you: ")) {
               response = {
