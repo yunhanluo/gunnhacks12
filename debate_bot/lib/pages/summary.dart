@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import '../services/openai_service.dart';
 
 class Summary extends StatefulWidget {
-  const Summary({super.key, required this.input});
+  const Summary({super.key, required this.input, required this.rawInput});
 
   final String input;
+  final String rawInput;
 
   @override
   State<Summary> createState() => _SummaryState();
@@ -94,7 +95,7 @@ class _SummaryState extends State<Summary> {
             Expanded(
               child: Padding(
                 padding: EdgeInsets.all(8),
-                child: Expanded(child: ChatArea(topic: widget.input)),
+                child: Expanded(child: ChatArea(topic: widget.input, rawTopic: widget.rawInput)),
               ),
             ),
           ],

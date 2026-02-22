@@ -9,6 +9,7 @@ class Home extends StatefulWidget {
   @override
   State<Home> createState() => _HomeState();
 }
+
 enum Side { aff, neg }
 
 class _HomeState extends State<Home> {
@@ -24,7 +25,7 @@ class _HomeState extends State<Home> {
       ),
       body: Center(
         child: Column(
-          children: [            
+          children: [
             Spacer(),
             Padding(
               padding: EdgeInsets.all(8),
@@ -63,14 +64,19 @@ class _HomeState extends State<Home> {
                       controller: inputcontroller,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
-                        hintText: "Let's get started! Type your topic here to continue.",
+                        hintText:
+                            "Let's get started! Type your topic here to continue.",
                       ),
                       onSubmitted: (_) {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) =>
-                              Summary(input: sideView == Side.aff ? "Affirmative on ${inputcontroller.text}" : "Negative on ${inputcontroller.text}"),
+                            builder: (context) => Summary(
+                              input: sideView == Side.aff
+                                  ? "Affirmative on ${inputcontroller.text}"
+                                  : "Negative on ${inputcontroller.text}",
+                              rawInput: inputcontroller.text,
+                            ),
                           ),
                         );
                       },
@@ -83,8 +89,12 @@ class _HomeState extends State<Home> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              Summary(input: sideView == Side.aff ? "Affirmative on ${inputcontroller.text}" : "Negative on ${inputcontroller.text}"),
+                          builder: (context) => Summary(
+                            input: sideView == Side.aff
+                                ? "Affirmative on ${inputcontroller.text}"
+                                : "Negative on ${inputcontroller.text}",
+                            rawInput: inputcontroller.text,
+                          ),
                         ),
                       );
                     },
@@ -92,7 +102,9 @@ class _HomeState extends State<Home> {
                 ],
               ),
             ),
-            Text("Debate Bot isn't always accurate! Make sure you check before you do!"),
+            Text(
+              "Debate Bot isn't always accurate! Make sure you check before you do!",
+            ),
             Padding(padding: EdgeInsets.all(4)),
           ],
         ),
