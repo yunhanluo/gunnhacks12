@@ -2,9 +2,10 @@ import 'package:debate_bot/services/openai_service.dart';
 import 'package:flutter/material.dart';
 
 class ChatArea extends StatefulWidget {
-  const ChatArea({super.key, required this.topic});
+  const ChatArea({super.key, required this.topic, required this.rawTopic});
 
   final String topic;
+  final String rawTopic;
 
   @override
   State<ChatArea> createState() => _ChatAreaState();
@@ -101,7 +102,7 @@ class _ChatAreaState extends State<ChatArea> {
           try {
             final result = await OpenAIService.askAI(
               systemMessage:
-                  "You are debating against a user about ${widget.topic}. You will be given the entire chat history, where the opponent is labeled \"opponent\" and you are labeled \"you\". Your task is to argue against the opponent, but try not to respond with multiple paragraphs. Instead, respond with at most one paragraph, and try to keep the conversation on track and always argue against the opponent.",
+                  "You are debating against a user about ${widget.topic}. They are taking the stance of ${widget.topic.replaceFirst(widget.rawTopic, "").contains("Affirm") ? "yes" : "no"}. You will be given the entire chat history, where the opponent is labeled \"opponent\" and you are labeled \"you\". Your task is to argue against the opponent, but try not to respond with multiple paragraphs. Instead, respond with at most one paragraph, and try to keep the conversation on track and always argue against the opponent.",
               userMessage: getChatHistory(),
             );
 

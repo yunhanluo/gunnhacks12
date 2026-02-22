@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import '../services/openai_service.dart';
 
 class Summary extends StatefulWidget {
-  const Summary({super.key, required this.input});
+  const Summary({super.key, required this.input, required this.rawInput});
 
   final String input;
+  final String rawInput;
 
   @override
   State<Summary> createState() => _SummaryState();
@@ -31,7 +32,7 @@ class _SummaryState extends State<Summary> {
       setState(() {
         points_response =
             result["choices"][0]["message"]["content"] ??
-            "We weren't able to get a points_response.";
+            "NOTRESPONDED";
       });
     } catch (e) {
       setState(() {
@@ -42,13 +43,13 @@ class _SummaryState extends State<Summary> {
   Future<void> _fetchtitle_response() async {
     try {
       final result = await OpenAIService.askAI(
-        systemMessage: "Please provide a very, very short summary of the debate topic. Include the aff/neg stance by adding it at the beginning, followed by a colon, then the rest of the summary. Make sure to be precise. Please make it title format, and do NOT add a period.",
+        systemMessage: "Please provide a very, very short summary of the debate topic. Include the aff/neg stance by adding it at the beginning, followed by a colon, then the rest of the summary. Make sure to be precise, around 5 words max. Don't say anything like 'arguing for/against... topic', just say the topic. Please make it title format, and do NOT add a period.",
         userMessage: widget.input,
       );
       setState(() {
         title_response =
             result["choices"][0]["message"]["content"] ??
-            "We weren't able to get a points_response.";
+            "NOTRESPONDED";
       });
     } catch (e) {
       setState(() {
@@ -110,7 +111,7 @@ class _SummaryState extends State<Summary> {
             Expanded(
               child: Padding(
                 padding: EdgeInsets.all(8),
-                child: Expanded(child: ChatArea(topic: widget.input)),
+                child: ChatArea(topic: widget.input, rawTopic: widget.rawInput),
               ),
             ),
           ],
