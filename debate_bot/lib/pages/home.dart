@@ -152,8 +152,8 @@ class _HomeState extends State<Home> {
       MaterialPageRoute(
         builder: (context) => Summary(
           input: sideView == Side.aff
-              ? "Affirmative on '${inputcontroller.text}'"
-              : "Negative on '${inputcontroller.text}'",
+              ? "Affirmative on '${inputcontroller.text}' with difficulty: $difficultyStr"
+              : "Negative on '${inputcontroller.text}' with difficulty: $difficultyStr",
           rawInput: inputcontroller.text,
           difficulty: difficultyStr,
         ),
