@@ -51,6 +51,7 @@ class _SummaryState extends State<Summary> {
   String title_response = "NOTRESPONDED";
   String points_response = "NOTRESPONDED";
   String outline_response = "NOTRESPONDED";
+  String rebuttal_response = "NOTRESPONDED";
 
   @override
   void initState() {
@@ -59,6 +60,7 @@ class _SummaryState extends State<Summary> {
     _fetchpoints_response();
     _fetchtitle_response();
     _fetchoutline_response();
+    _fetchrebuttal_response();
   }
 
   Future<void> _fetchpoints_response() async {
@@ -101,7 +103,7 @@ class _SummaryState extends State<Summary> {
     try {
       final result = await OpenAIService.askAI(
         systemMessage:
-            "You are a debate speech outline assistant. Given a debate topic and stance, produce a classically formatted speech outline with the following structure:\nI. Introduction\n   A. Hook\n   B. Thesis statement\nII. Body\n   A. First argument\n      1. Evidence/support\n   B. Second argument\n      1. Evidence/support\n   C. Third argument\n      1. Evidence/support\nIII. Rebuttal\n   A. Anticipated counterargument\n   B. Response\nIV. Conclusion\n   A. Summary\n   B. Closing statement\n\nKeep each point concise but clear.",
+            "Please create a speech outline for the given input. It should have enough points to be 7 minutes. Please make it classic style (intro -> body (x paragraphs) -> conclusion)",
         userMessage: widget.input,
       );
       //print(result["choices"][0]["message"]["content"]);
@@ -116,6 +118,24 @@ class _SummaryState extends State<Summary> {
     }
   }
 
+  Future<void> _fetchrebuttal_response() async {
+    try {
+      final result = await OpenAIService.askAI(
+        systemMessage:
+            "You are a debate assistant. Given a debate topic and stance, identify the strongest arguments the opposing side is likely to make. List them as concise points the user should be prepared to rebut. Format as: - [point]\n- [point]\n... Sort by strength/likelihood. Afterwards, please provide rebuttal points for the given arguments in a 'rebuttal' section at the bottom in the same order.",
+        userMessage: widget.input,
+      );
+      setState(() {
+        rebuttal_response =
+            result["choices"][0]["message"]["content"] ?? "NOTRESPONDED";
+      });
+    } catch (e) {
+      setState(() {
+        rebuttal_response = "Error: $e";
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -125,105 +145,102 @@ class _SummaryState extends State<Summary> {
           "Dashboard - ${title_response == "NOTRESPONDED" ? widget.input : title_response}",
         ),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(8),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    SizedBox(
-                      width: double.infinity,
-                      child: Card(
-                        elevation: 0,
-                        color: Theme.of(context).colorScheme.inversePrimary,
-                        child: Padding(
-                          padding: EdgeInsets.all(8),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text("Topic", style: TextStyle(fontSize: 20)),
-                              Text(widget.input),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: double.infinity,
-                      child: Card(
-                        elevation: 0,
-                        color: Theme.of(context).colorScheme.inversePrimary,
-                        child: Padding(
-                          padding: EdgeInsets.all(8),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text("Points", style: TextStyle(fontSize: 20)),
-                              points_response != "NOTRESPONDED"
-                                  ? Text(points_response)
-                                  : LinearProgressIndicator(),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: double.infinity,
-                      child: Card(
-                        elevation: 0,
-                        color: Theme.of(context).colorScheme.inversePrimary,
-                        child: Padding(
-                          padding: EdgeInsets.all(8),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Speech Outline",
-                                style: TextStyle(fontSize: 20),
-                              ),
-                              outline_response != "NOTRESPONDED"
-                                  ? Text(outline_response)
-                                  : LinearProgressIndicator(),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox.square(dimension: 8),
-                    SizedBox(
-                      width: double.infinity,
-                      child: Card(
-                        elevation: 0,
-                        color: Theme.of(context).colorScheme.inversePrimary,
-                        child: Padding(
-                          padding: EdgeInsets.all(8),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Current Standing",
-                                style: TextStyle(fontSize: 30),
-                              ),
-                              MeterArea(),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final isNarrow = constraints.maxWidth < 500;
+          final infoCards = [
+            _buildCard(context, "Topic", Text(widget.input)),
+            _buildCard(
+              context,
+              "Points",
+              points_response != "NOTRESPONDED"
+                  ? Text(points_response)
+                  : LinearProgressIndicator(),
+            ),
+            _buildCard(
+              context,
+              "Speech Outline",
+              outline_response != "NOTRESPONDED"
+                  ? Text(outline_response)
+                  : LinearProgressIndicator(),
+            ),
+            _buildCard(
+              context,
+              "Opposing Points and Their Rebuttals",
+              rebuttal_response != "NOTRESPONDED"
+                  ? Text(rebuttal_response)
+                  : LinearProgressIndicator(),
+            ),
+            _buildCard(
+              context,
+              "Current Standing",
+              Column(children: [SizedBox(height: 8), MeterArea()]),
+            ),
+          ];
+
+          if (isNarrow) {
+            return Column(
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.all(8),
+                    child: Column(children: infoCards),
+                  ),
                 ),
-              ),
+                SizedBox(
+                  height: constraints.maxHeight * 0.45,
+                  child: Padding(
+                    padding: EdgeInsets.all(8),
+                    child: ChatArea(
+                      topic: widget.input,
+                      rawTopic: widget.rawInput,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          }
+
+          return Padding(
+            padding: EdgeInsets.all(8),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(children: infoCards),
+                  ),
+                ),
+                Expanded(
+                  child: ChatArea(
+                    topic: widget.input,
+                    rawTopic: widget.rawInput,
+                  ),
+                ),
+              ],
             ),
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.all(8),
-                child: ChatArea(topic: widget.input, rawTopic: widget.rawInput),
-              ),
-            ),
-          ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildCard(BuildContext context, String title, Widget content) {
+    return SizedBox(
+      width: double.infinity,
+      child: Card(
+        elevation: 0,
+        color: Theme.of(context).colorScheme.inversePrimary,
+        child: Padding(
+          padding: EdgeInsets.all(8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, style: TextStyle(fontSize: 20)),
+              content,
+            ],
+          ),
         ),
       ),
     );
