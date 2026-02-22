@@ -54,7 +54,7 @@ class _ChatAreaState extends State<ChatArea> {
                   controller: inputController,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    hintText: "Elaborate on your prompt!",
+                    hintText: "Ask a follow-up question here!",
                   ),
                   onSubmitted: (_) => _processMessage(),
                   focusNode: inputFocus,

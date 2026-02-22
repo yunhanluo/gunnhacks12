@@ -9,9 +9,11 @@ class Home extends StatefulWidget {
   @override
   State<Home> createState() => _HomeState();
 }
+enum Side { aff, neg }
 
 class _HomeState extends State<Home> {
   final inputcontroller = TextEditingController();
+  Side sideView = Side.aff;
 
   @override
   Widget build(BuildContext context) {
@@ -22,14 +24,40 @@ class _HomeState extends State<Home> {
       ),
       body: Center(
         child: Column(
-          children: [
-            Text("Welcome to our Debate Bot for GunnHaXII!"),
-            
+          children: [            
             Spacer(),
             Padding(
               padding: EdgeInsets.all(8),
               child: Row(
                 children: [
+                  SegmentedButton<Side>(
+                    style: ButtonStyle(
+                      shape: WidgetStatePropertyAll(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                    ),
+                    segments: const <ButtonSegment<Side>>[
+                      ButtonSegment<Side>(
+                        value: Side.aff,
+                        label: Text('Affirmative'),
+                        icon: Icon(Icons.check),
+                      ),
+                      ButtonSegment<Side>(
+                        value: Side.neg,
+                        label: Text('Negative'),
+                        icon: Icon(Icons.close),
+                      ),
+                    ],
+                    selected: <Side>{sideView},
+                    onSelectionChanged: (Set<Side> newSelection) {
+                      setState(() {
+                        sideView = newSelection.first;
+                      });
+                    },
+                  ),
+                  SizedBox(width: 8),
                   Expanded(
                     child: TextField(
                       controller: inputcontroller,
@@ -42,7 +70,7 @@ class _HomeState extends State<Home> {
                           context,
                           MaterialPageRoute(
                             builder: (context) =>
-                                Summary(input: inputcontroller.text),
+                              Summary(input: sideView == Side.aff ? "Affirmative on ${inputcontroller.text}" : "Negative on ${inputcontroller.text}"),
                           ),
                         );
                       },
@@ -56,7 +84,7 @@ class _HomeState extends State<Home> {
                         context,
                         MaterialPageRoute(
                           builder: (context) =>
-                              Summary(input: inputcontroller.text),
+                              Summary(input: sideView == Side.aff ? "Affirmative on ${inputcontroller.text}" : "Negative on ${inputcontroller.text}"),
                         ),
                       );
                     },
