@@ -21,7 +21,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        foregroundColor: Theme.of(context).colorScheme.inversePrimary,
+        foregroundColor: Colors.white,
         backgroundColor: Theme.of(context).colorScheme.primary,
         title: Text("Debate Bot"),
       ),
@@ -41,15 +41,6 @@ class _HomeState extends State<Home> {
             SizedBox(height: 24),
 
             SizedBox(height: 8),
-            
-            Text(
-              "Debate With AI!",
-              style: TextStyle(
-                fontSize: 24,
-                color: Theme.of(context).colorScheme.inversePrimary,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
             Image.asset(
               'assets/images/robot-bot-black-icon.png',
               height: 350,
@@ -61,7 +52,13 @@ class _HomeState extends State<Home> {
               padding: EdgeInsets.symmetric(horizontal: 24),
               child: Row(
                 children: [
-                  Text("Need inspiration? Try one of these!", style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey[600])),
+                  Text(
+                    "Need inspiration? Try one of these!",
+                    style: TextStyle(
+                      fontStyle: FontStyle.italic,
+                      color: Colors.grey[600],
+                    ),
+                  ),
                   SizedBox(width: 16),
                   _topicChip("School uniforms should be mandatory"),
                   _topicChip("Social media should be banned"),
@@ -71,7 +68,7 @@ class _HomeState extends State<Home> {
                 ],
               ),
             ),
-            
+
             Padding(
               padding: EdgeInsets.all(8),
               child: Row(
