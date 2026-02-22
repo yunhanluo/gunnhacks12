@@ -1,7 +1,10 @@
+import 'package:debate_bot/services/openai_service.dart';
 import 'package:flutter/material.dart';
 
 class ChatArea extends StatefulWidget {
-  const ChatArea({super.key});
+  const ChatArea({super.key, required this.topic});
+
+  final String topic;
 
   @override
   State<ChatArea> createState() => _ChatAreaState();
@@ -11,8 +14,10 @@ class _ChatAreaState extends State<ChatArea> {
   final inputController = TextEditingController();
   final inputFocus = FocusNode();
 
-  final List<Widget> _messages = [];
+  final List<_Message> _messages = [];
   final ScrollController scrollController = ScrollController();
+
+  bool awaitingAi = false;
 
   @override
   void dispose() {
@@ -48,7 +53,7 @@ class _ChatAreaState extends State<ChatArea> {
                   controller: inputController,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    hintText: "...",
+                    hintText: "Say something...",
                   ),
                   onSubmitted: (_) => _processMessage(),
                   focusNode: inputFocus,
@@ -67,12 +72,9 @@ class _ChatAreaState extends State<ChatArea> {
     );
   }
 
-  void _processMessage() {
+  void _addMessage(String message, _Sender sender) {
     setState(() {
-      _messages.add(Text(inputController.text));
-
-      inputController.text = "";
-      inputFocus.requestFocus();
+      _messages.add(_Message(message: message, sender: sender));
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -82,4 +84,61 @@ class _ChatAreaState extends State<ChatArea> {
       );
     });
   }
+
+  void _processMessage() {
+    if (awaitingAi) return;
+
+    awaitingAi = true;
+
+    _addMessage(inputController.text, _Sender.human);
+
+    setState(() {
+      inputController.text = "";
+      inputFocus.requestFocus();
+    });
+
+    setState(() {
+      () async {
+        String response = "";
+
+        try {
+          final result = await OpenAIService.askAI(
+            systemMessage:
+                "You are debating against a user about ${widget.topic}.",
+
+            userMessage: _messages.last.message,
+          );
+
+          response =
+              result["choices"][0]["message"]["content"] ??
+              "We weren't able to get a response.";
+        } catch (e) {
+          response = "Error: $e";
+        }
+
+        _addMessage(response, _Sender.ai);
+
+        awaitingAi = false;
+      }();
+    });
+  }
 }
+
+class _Message extends StatelessWidget {
+  const _Message({super.key, required this.message, required this.sender});
+
+  final String message;
+  final _Sender sender;
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: sender == _Sender.human
+          ? Alignment.centerLeft
+          : Alignment.centerRight,
+      child: Text(message)
+    );
+  }
+}
+
+enum _Sender { human, ai }

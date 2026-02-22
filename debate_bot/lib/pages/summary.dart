@@ -84,7 +84,7 @@ class _SummaryState extends State<Summary> {
               ),
             ),
             Expanded(
-              child: ChatArea(),
+              child: ChatArea(topic: widget.input),
             ),
           ],
         ),
