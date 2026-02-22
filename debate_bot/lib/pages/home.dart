@@ -32,7 +32,7 @@ class _HomeState extends State<Home> {
       _topicChip("Should college education be free?"),
       _topicChip("Is space exploration worth the cost?"),
       _topicChip("Should homework be abolished?"),
-      // _topicChip("Should AI be banned"), // Justice for ChatGPT
+      _topicChip("Should AI be banned"), // Justice for ChatGPT //NO
       _topicChip("Should phones be banned for students?"),
       _topicChip("Should voting be mandatory?"),
       _topicChip("Should the Electoral College be abolished in the U.S.?"),
@@ -309,7 +309,7 @@ class _HomeState extends State<Home> {
     return Row(
       children: [
         ActionChip(
-          label: Icon(Icons.casino_outlined),
+          label: Icon(Icons.casino_outlined, size: 20),
           onPressed: () {
             try {
               ActionChip target =
