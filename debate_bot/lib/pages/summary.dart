@@ -102,7 +102,7 @@ class _SummaryState extends State<Summary> {
                       "Ask a Follow-up Question",
                       style: TextStyle(fontSize: 20),
                     ),
-                    Expanded(child: ChatArea()),
+                    Expanded(child: ChatArea(topic: widget.input)),
                   ],
                 ),
               ),
