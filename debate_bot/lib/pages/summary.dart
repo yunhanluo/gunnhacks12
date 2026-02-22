@@ -52,6 +52,7 @@ class _SummaryState extends State<Summary> {
   String points_response = "NOTRESPONDED";
   String outline_response = "NOTRESPONDED";
   String rebuttal_response = "NOTRESPONDED";
+  int _mobileTabIndex = 0;
 
   @override
   void initState() {
@@ -145,6 +146,25 @@ class _SummaryState extends State<Summary> {
           "Dashboard - ${title_response == "NOTRESPONDED" ? widget.input : title_response}",
         ),
       ),
+      bottomNavigationBar: LayoutBuilder(
+        builder: (context, constraints) {
+          if (constraints.maxWidth >= 500) return SizedBox.shrink(); // if its not a mobile device, we can just make the navbar vanish!
+          return BottomNavigationBar(
+            currentIndex: _mobileTabIndex,
+            onTap: (index) => setState(() => _mobileTabIndex = index),
+            items: const [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.dashboard),
+                label: 'Dashboard',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.chat),
+                label: 'Chat',
+              ),
+            ],
+          );
+        },
+      ),
       body: LayoutBuilder(
         builder: (context, constraints) {
           final isNarrow = constraints.maxWidth < 500;
@@ -182,21 +202,18 @@ class _SummaryState extends State<Summary> {
             return Column(
               children: [
                 Expanded(
-                  flex: 1,
-                  child: SingleChildScrollView(
-                    padding: EdgeInsets.all(8),
-                    child: Column(children: infoCards),
-                  ),
-                ),
-                SizedBox(
-                  height: constraints.maxHeight * 0.45,
-                  child: Padding(
-                    padding: EdgeInsets.all(8),
-                    child: ChatArea(
-                      topic: widget.input,
-                      rawTopic: widget.rawInput,
-                    ),
-                  ),
+                  child: _mobileTabIndex == 0
+                      ? SingleChildScrollView(
+                          padding: EdgeInsets.all(8),
+                          child: Column(children: infoCards),
+                        )
+                      : Padding(
+                          padding: EdgeInsets.all(8),
+                          child: ChatArea(
+                            topic: widget.input,
+                            rawTopic: widget.rawInput,
+                          ),
+                        ),
                 ),
               ],
             );
