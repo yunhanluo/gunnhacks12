@@ -22,6 +22,7 @@ class MyApp extends StatelessWidget {
           seedColor: Colors.black,
           primary: Colors.black,
           onPrimary: Colors.white,
+          inversePrimary: Colors.white,
         ),
       ),
       initialRoute: '/',
