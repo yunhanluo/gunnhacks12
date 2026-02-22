@@ -358,11 +358,7 @@ class _HomeState extends State<Home> {
         ActionChip(
           label: Row(
             mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.casino_outlined, size: 20),
-              SizedBox(width: 4),
-              Text("I'm Feeling Lucky"),
-            ],
+            children: [Icon(Icons.casino_outlined, size: 20)],
           ),
           onPressed: () {
             try {
