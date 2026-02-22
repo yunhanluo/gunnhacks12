@@ -146,25 +146,24 @@ class _SummaryState extends State<Summary> {
           "Dashboard - ${title_response == "NOTRESPONDED" ? widget.input : title_response}",
         ),
       ),
-      bottomNavigationBar: LayoutBuilder(
-        builder: (context, constraints) {
-          if (constraints.maxWidth >= 500) return SizedBox.shrink(); // if its not a mobile device, we can just make the navbar vanish!
-          return BottomNavigationBar(
-            currentIndex: _mobileTabIndex,
-            onTap: (index) => setState(() => _mobileTabIndex = index),
-            items: const [
-              BottomNavigationBarItem(
-                icon: Icon(Icons.dashboard),
-                label: 'Dashboard',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.chat),
-                label: 'Chat',
-              ),
-            ],
-          );
-        },
-      ),
+      // Only show bottom nav on narrow screens; avoid SizedBox.shrink() to prevent
+      // "Cannot hit test a render box with no size" when the bar is hidden.
+      bottomNavigationBar: MediaQuery.sizeOf(context).width < 500
+          ? BottomNavigationBar(
+              currentIndex: _mobileTabIndex,
+              onTap: (index) => setState(() => _mobileTabIndex = index),
+              items: const [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.dashboard),
+                  label: 'Dashboard',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.chat),
+                  label: 'Chat',
+                ),
+              ],
+            )
+          : null,
       body: LayoutBuilder(
         builder: (context, constraints) {
           final isNarrow = constraints.maxWidth < 500;
