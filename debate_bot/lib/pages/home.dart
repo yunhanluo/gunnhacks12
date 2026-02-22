@@ -31,6 +31,7 @@ class _HomeState extends State<Home> {
               child: Row(
                 children: [
                   SegmentedButton<Side>(
+                    showSelectedIcon: false,
                     style: ButtonStyle(
                       shape: WidgetStatePropertyAll(
                         RoundedRectangleBorder(
@@ -42,12 +43,12 @@ class _HomeState extends State<Home> {
                       ButtonSegment<Side>(
                         value: Side.aff,
                         label: Text('Affirmative'),
-                        icon: Icon(Icons.check),
+                        icon: Icon(Icons.thumb_up_outlined),
                       ),
                       ButtonSegment<Side>(
                         value: Side.neg,
                         label: Text('Negative'),
-                        icon: Icon(Icons.close),
+                        icon: Icon(Icons.thumb_down_outlined),
                       ),
                     ],
                     selected: <Side>{sideView},
