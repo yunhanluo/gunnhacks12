@@ -52,7 +52,6 @@ class Summary extends StatefulWidget {
 }
 
 class _SummaryState extends State<Summary> {
-  String response = "NOTRESPONDED";
   String title_response = "NOTRESPONDED";
   String points_response = "NOTRESPONDED";
   String outline_response = "NOTRESPONDED";
@@ -135,8 +134,9 @@ class _SummaryState extends State<Summary> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              child: Column(
-                children: [
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
                   SizedBox(
                     width: double.infinity,
                     child: Card(
@@ -148,7 +148,8 @@ class _SummaryState extends State<Summary> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text("Topic", style: TextStyle(fontSize: 20)),
-                            Text(widget.input),
+                            title_response == "NOTRESPONDED" ? LinearProgressIndicator() : Text(title_response),
+                            Text(widget.input)
                           ],
                         ),
                       ),
@@ -165,8 +166,27 @@ class _SummaryState extends State<Summary> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text("Points", style: TextStyle(fontSize: 20)),
-                            response != "NOTRESPONDED"
-                                ? Text(response)
+                            points_response != "NOTRESPONDED"
+                                ? Text(points_response)
+                                : LinearProgressIndicator(),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: double.infinity,
+                    child: Card(
+                      elevation: 0,
+                      color: Theme.of(context).colorScheme.inversePrimary,
+                      child: Padding(
+                        padding: EdgeInsets.all(8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("Speech Outline", style: TextStyle(fontSize: 20)),
+                            outline_response != "NOTRESPONDED"
+                                ? Text(outline_response)
                                 : LinearProgressIndicator(),
                           ],
                         ),
@@ -175,15 +195,14 @@ class _SummaryState extends State<Summary> {
                   ),
                 ],
               ),
+              ),
             ),
             Expanded(
               child: Padding(
                 padding: EdgeInsets.all(8),
-                child: Expanded(
-                  child: ChatArea(
-                    topic: widget.input,
-                    rawTopic: widget.rawInput,
-                  ),
+                child: ChatArea(
+                  topic: widget.input,
+                  rawTopic: widget.rawInput,
                 ),
               ),
             ),
