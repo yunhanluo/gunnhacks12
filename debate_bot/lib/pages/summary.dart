@@ -13,7 +13,7 @@ class Summary extends StatefulWidget {
 
 class _SummaryState extends State<Summary> {
   String response =
-      "Please give us one second while we process your request...";
+      "NOTRESPONDED";
 
   @override
   void initState() {
@@ -82,7 +82,7 @@ class _SummaryState extends State<Summary> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text("Points", style: TextStyle(fontSize: 20)),
-                            Text(response),
+                            response != "NOTRESPONDED" ? Text(response) : LinearProgressIndicator(),
                           ],
                         ),
                       ),
@@ -94,17 +94,7 @@ class _SummaryState extends State<Summary> {
             Expanded(
               child: Padding(
                 padding: EdgeInsets.all(8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 4),
-                    Text(
-                      "Ask a Follow-up Question",
-                      style: TextStyle(fontSize: 20),
-                    ),
-                    Expanded(child: ChatArea(topic: widget.input)),
-                  ],
-                ),
+                child: Expanded(child: ChatArea(topic: widget.input)),
               ),
             ),
           ],
