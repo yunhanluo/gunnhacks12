@@ -199,7 +199,7 @@ class _HomeState extends State<Home> {
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
-          final isNarrow = constraints.maxWidth < 500;
+          final isNarrow = constraints.maxWidth < 1000;
           return Center(
             child: Column(
               children: [
