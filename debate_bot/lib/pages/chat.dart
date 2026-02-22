@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:debate_bot/services/openai_service.dart';
 import 'package:flutter/material.dart';
 
@@ -44,7 +43,7 @@ class _ChatAreaState extends State<ChatArea> {
               children: [
                 Text("Current Standing", style: TextStyle(fontSize: 20)),
                 SizedBox(height: 8),
-                MeterArea(),
+                MeterArea()
               ],
             ),
           ),
@@ -140,11 +139,12 @@ class _ChatAreaState extends State<ChatArea> {
                   Also, take into considerartion the user's performance across the entire conversation, not just the last few messages.
                   (Some common logical fallacies are: Ad Hominem, Straw Man, False Dilemma (False Dichotomy), Circular Reasoning (Begging the Question), Appeal to Popularity (Bandwagon), Slippery Slope, Hasty Generalization, Appeal to Emotion, Red Herring, False Cause (Post Hoc / Correlation ≠ Causation). 
                   Keep these in mind as you respond. It is extremely important to be as constructive as possible when it is obvious that the user is not doing well in the debate.)
+                  Also make sure the user is debating on their side.
                   """
                       .replaceAll('\n', ' '),
               // userMessage: getChatHistory(),
               userMessages: _messages,
-              penalty: 1,
+              penalty: 2,
               responseFormat: {
                 // 'json_schema': {
                 //   'name': 'Response and User Standing Percentage',
@@ -283,7 +283,7 @@ class Message extends StatelessWidget {
                 : Alignment.centerRight),
       child: ConstrainedBox(
         constraints: BoxConstraints(
-          maxWidth: MediaQuery.sizeOf(context).width * 0.7,
+          maxWidth: MediaQuery.sizeOf(context).width * 0.45,
         ),
         child: Card(
           elevation: 0,
