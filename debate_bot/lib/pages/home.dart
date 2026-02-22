@@ -173,9 +173,7 @@ class _HomeState extends State<Home> {
         ButtonSegment<Side>(
           value: Side.aff,
           label: Padding(
-            padding: !isNarrow
-                ? EdgeInsets.symmetric(vertical: 14)
-                : EdgeInsets.all(0),
+            padding: EdgeInsets.symmetric(vertical: 14),
             child: Text('AFF'),
           ),
         ),
@@ -199,7 +197,7 @@ class _HomeState extends State<Home> {
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
-          final isNarrow = constraints.maxWidth < 500;
+          final isNarrow = constraints.maxWidth < 1200;
           return Center(
             child: Column(
               children: [
@@ -245,17 +243,16 @@ class _HomeState extends State<Home> {
                       ? Column(
                           children: [
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 _buildSegmentedButton(isNarrow),
                                 SizedBox(width: 8),
-                                _difficultySelector(),
+                                Expanded(child: _difficultySelector()),
                               ],
                             ),
                             SizedBox(height: 8),
                             Row(
                               children: [
-                                Flexible(
+                                Expanded(
                                   child: TextField(
                                     controller: inputcontroller,
                                     decoration: InputDecoration(
@@ -266,7 +263,6 @@ class _HomeState extends State<Home> {
                                   ),
                                 ),
                                 SizedBox(width: 8),
-
                                 IconButton(
                                   icon: Icon(Icons.send),
                                   onPressed: _navigateToSummary,
@@ -279,8 +275,7 @@ class _HomeState extends State<Home> {
                           children: [
                             _buildSegmentedButton(isNarrow),
                             SizedBox(width: 8),
-                            ConstrainedBox(
-                              constraints: BoxConstraints(maxWidth: 800),
+                            Expanded(
                               child: TextField(
                                 controller: inputcontroller,
                                 decoration: InputDecoration(
@@ -292,7 +287,7 @@ class _HomeState extends State<Home> {
                               ),
                             ),
                             SizedBox(width: 8),
-                            _difficultySelector(),
+                            SizedBox(width: 160, child: _difficultySelector()),
                             SizedBox(width: 8),
                             IconButton(
                               icon: Icon(Icons.send),
@@ -319,20 +314,23 @@ class _HomeState extends State<Home> {
   }
 
   Widget _difficultySelector() {
-    return SizedBox(
-      width: 200,
-      child: DropdownButton<String>(
-        value: _difficulty,
-        isExpanded: true,
-        items: _difficultyOptions
-            .map(
-              (d) => DropdownMenuItem(
-                value: d,
-                child: Text(d[0].toUpperCase() + d.substring(1)),
-              ),
-            )
-            .toList(),
-        onChanged: (v) => setState(() => _difficulty = v!),
+    return InputDecorator(
+      decoration: InputDecoration(border: OutlineInputBorder()),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: _difficulty,
+          isExpanded: true,
+          isDense: true,
+          items: _difficultyOptions
+              .map(
+                (d) => DropdownMenuItem(
+                  value: d,
+                  child: Text(d[0].toUpperCase() + d.substring(1)),
+                ),
+              )
+              .toList(),
+          onChanged: (v) => setState(() => _difficulty = v!),
+        ),
       ),
     );
   }
@@ -349,6 +347,7 @@ class _HomeState extends State<Home> {
             });
           },
         ),
+        SizedBox(width: 8),
       ],
     );
   }
