@@ -82,6 +82,10 @@ class _SummaryState extends State<Summary> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text("Debate Bot"),
+      ),
       body: Padding(
         padding: EdgeInsets.all(8),
         child: Row(
@@ -126,7 +130,22 @@ class _SummaryState extends State<Summary> {
                 ],
               ),
             ),
-            Expanded(child: ChatArea()),
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.all(8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 4),
+                    Text(
+                      "Ask a Follow-up Question",
+                      style: TextStyle(fontSize: 20),
+                    ),
+                    Expanded(child: ChatArea(topic: widget.input)),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),
