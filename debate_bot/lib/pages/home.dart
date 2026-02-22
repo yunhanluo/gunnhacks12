@@ -85,7 +85,7 @@ class _HomeState extends State<Home> {
                 SizedBox(height: 4),
                 Text(
                   "Win Your Debates",
-                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                  style: TextStyle(fontSize: 18, color: Colors.grey[600]),
                   textAlign: TextAlign.center,
                 ),
 
