@@ -17,7 +17,7 @@ class _ChatAreaState extends State<ChatArea> {
   final inputController = TextEditingController();
   final inputFocus = FocusNode();
 
-  final List<_Message> _messages = [];
+  final List<Message> _messages = [];
   final ScrollController scrollController = ScrollController();
 
   bool awaitingAi = false;
@@ -58,7 +58,8 @@ class _ChatAreaState extends State<ChatArea> {
                   controller: inputController,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    hintText: "Ask a follow-up question here! Or, take a try at debating and type in your points.",
+                    hintText:
+                        "Ask a follow-up question here! Or, take a try at debating and type in your points.",
                   ),
                   onSubmitted: (_) => _processMessage(),
                   focusNode: inputFocus,
@@ -74,9 +75,9 @@ class _ChatAreaState extends State<ChatArea> {
     );
   }
 
-  void _addMessage(String message, _Sender sender) {
+  void _addMessage(String message, Sender sender) {
     setState(() {
-      _messages.add(_Message(message: message, sender: sender));
+      _messages.add(Message(message: message, sender: sender));
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -89,7 +90,7 @@ class _ChatAreaState extends State<ChatArea> {
 
     awaitingAi = true;
 
-    _addMessage(inputController.text, _Sender.human);
+    _addMessage(inputController.text, Sender.human);
 
     setState(() {
       inputController.text = "";
@@ -101,17 +102,49 @@ class _ChatAreaState extends State<ChatArea> {
         Future.delayed(Duration(milliseconds: 10), () async {
           Map<String, dynamic> response;
 
+          Map result = {};
+
           try {
-            final result = await OpenAIService.askAI(
+            result = await OpenAIService.askAI(
               systemMessage:
-                  "You are debating against a user about ${widget.topic}. They are taking the stance of ${widget.topic.replaceFirst(widget.rawTopic, "").contains("Affirm") ? "yes" : "no"}. You will be given the entire chat history, where the opponent is labeled \"opponent\" and you are labeled \"you\". Your task is to argue against the opponent, but try not to respond with multiple paragraphs. Instead, respond with at most one paragraph, and try to keep the conversation on track and always argue against the opponent. Sometimes the user may ask you a question of the topic. In that case, please answer. Don't talk about the debating stuff written before. When the user is ready to debate, just smoothly transition into debate mode. Format your response in a JSON with the key \"response\" containing your response and the key \"successPercentage\" containing a number from 0-100 detailing how well you think your opponent is doing in the debate.",
-              userMessage: getChatHistory(),
+                  """You are debating against a user about ${widget.topic}.
+                  They are taking the stance of ${widget.topic.replaceFirst(widget.rawTopic, "").contains("Affirm") ? "yes" : "no"}.
+                  Your task is to argue against the opponent, but try not to respond with multiple paragraphs.
+                  Instead, respond with at most one paragraph, and always argue against the opponent.
+                  Sometimes the user may ask you a question of the topic. In that case, please answer.
+                  When the user is ready to debate, just smoothly transition into debate mode.
+                  An example of rating would be giving a user who is making very strong points a higher rating, or giving a user straying off-track or giving weak points a lower rating.
+                  Format your response as a JSON strnig with "response" containing your response to the user's debate argument and "successPercentage" containing a 0-100 number detailing how well you think the user is doing in the debate.""".replaceAll('\n', ' '),
+              // userMessage: getChatHistory(),
+              userMessages: _messages,
+              responseFormat: {
+                // 'json_schema': {
+                //   'name': 'Response and User Standing Percentage',
+                //   'schema': {
+                //     "\$schema": "https://json-schema.org/draft/2020-12/schema",
+                //     "type": "object",
+                //     "properties": {
+                //       "response": {
+                //         "description": "the respones to the user's argument",
+                //         "type": "string"
+                //       },
+                //       "successPercentage": {
+                //         "description": "a 0-100 number detailing how well you think the user is doing in the debate",
+                //         "type": "integer"
+                //       }
+                //     }
+                //   },
+                //   'strict': true,
+                // },
+                // 'type': 'json_schema'
+                'type': 'json_object'
+              }
             );
 
             response = result["choices"][0]["message"]["content"] == null
                 ? {
                     "response": "We weren't able to get a response.",
-                    "successPercentage": _MeterDataHolder().userRating,
+                    "successPercentage": MeterDataHolder().userRating,
                   }
                 : jsonDecode(result["choices"][0]["message"]["content"]);
 
@@ -123,17 +156,21 @@ class _ChatAreaState extends State<ChatArea> {
             }
           } catch (e) {
             response = {
-              "response": "Error: $e",
-              "successPercentage": _MeterDataHolder().userRating,
+              "response": "Error: $e\nResult: $result",
+              "successPercentage": MeterDataHolder().userRating,
             };
+
+            // rethrow;
           }
 
-          _addMessage(response["response"], _Sender.ai);
+          _addMessage(response["response"], Sender.ai);
           // _addMessage(getChatHistory(), _Sender.other);
 
-          _MeterDataHolder().setUserRating(
-            (response["successPercentage"] is int ? response["successPercentage"] : int.tryParse(response["successPercentage"])) ??
-                _MeterDataHolder().userRating,
+          MeterDataHolder().setUserRating(
+            (response["successPercentage"] is int
+                    ? response["successPercentage"]
+                    : int.tryParse(response["successPercentage"])) ??
+                MeterDataHolder().userRating,
           );
 
           awaitingAi = false;
@@ -142,34 +179,34 @@ class _ChatAreaState extends State<ChatArea> {
     });
   }
 
-  String getChatHistory() {
-    String result = "";
+  // String getChatHistory() {
+  //   String result = "";
 
-    for (_Message message in _messages) {
-      if (message.sender == _Sender.system) {
-        continue;
-      }
+  //   for (Message message in _messages) {
+  //     if (message.sender == Sender.system) {
+  //       continue;
+  //     }
 
-      result +=
-          "${message.sender == _Sender.human ? "opponent" : "you"}: ${message.message}\n";
-    }
+  //     result +=
+  //         "${message.sender == Sender.human ? "opponent" : "you"}: ${message.message}\n";
+  //   }
 
-    return result.trim();
-  }
+  //   return result.trim();
+  // }
 }
 
-class _Message extends StatelessWidget {
-  const _Message({required this.message, required this.sender});
+class Message extends StatelessWidget {
+  const Message({super.key, required this.message, required this.sender});
 
   final String message;
-  final _Sender sender;
+  final Sender sender;
 
   @override
   Widget build(BuildContext context) {
     return Align(
-      alignment: sender == _Sender.human
+      alignment: sender == Sender.human
           ? Alignment.centerLeft
-          : (sender == _Sender.system
+          : (sender == Sender.system
                 ? Alignment.center
                 : Alignment.centerRight),
       child: ConstrainedBox(
@@ -180,8 +217,8 @@ class _Message extends StatelessWidget {
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(sender == _Sender.human ? 0 : 8),
-              topRight: Radius.circular(sender == _Sender.ai ? 0 : 8),
+              topLeft: Radius.circular(sender == Sender.human ? 0 : 8),
+              topRight: Radius.circular(sender == Sender.ai ? 0 : 8),
               bottomLeft: Radius.circular(8),
               bottomRight: Radius.circular(8),
             ),
@@ -194,7 +231,7 @@ class _Message extends StatelessWidget {
   }
 }
 
-enum _Sender { human, ai, system }
+enum Sender { human, ai, system }
 
 class MeterArea extends StatefulWidget {
   const MeterArea({super.key});
@@ -208,7 +245,6 @@ class _MeterAreaState extends State<MeterArea> {
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
-      spacing: 30,
       children: [
         ConstrainedBox(
           constraints: BoxConstraints(maxHeight: 40),
@@ -219,18 +255,24 @@ class _MeterAreaState extends State<MeterArea> {
               SizedBox(width: 100, child: Text("How well you are doing: ")),
               Expanded(
                 child: ListenableBuilder(
-                  listenable: _MeterDataHolder(),
+                  listenable: MeterDataHolder(),
                   builder: (context, child) {
-                    return LinearProgressIndicator(
-                      value: _MeterDataHolder().userRating / 100,
-                      minHeight: 35,
+                    return Tooltip(
+                      message:
+                          "You: ${MeterDataHolder().userRating.toString()}%",
+                      child: LinearProgressIndicator(
+                        value: MeterDataHolder().userRating / 100,
+                        minHeight: 35,
+                      ),
                     );
                   },
                 ),
               ),
+              SizedBox(width: 2),
             ],
           ),
         ),
+        SizedBox.square(dimension: 30),
         ConstrainedBox(
           constraints: BoxConstraints(maxHeight: 40),
           child: Row(
@@ -240,28 +282,34 @@ class _MeterAreaState extends State<MeterArea> {
               SizedBox(width: 100, child: Text("How well AI is doing: ")),
               Expanded(
                 child: ListenableBuilder(
-                  listenable: _MeterDataHolder(),
+                  listenable: MeterDataHolder(),
                   builder: (context, child) {
-                    return LinearProgressIndicator(
-                      value: 1 - _MeterDataHolder().userRating / 100,
-                      minHeight: 35,
+                    return Tooltip(
+                      message:
+                          "AI: ${(100 - MeterDataHolder().userRating).toString()}%",
+                      child: LinearProgressIndicator(
+                        value: 1 - MeterDataHolder().userRating / 100,
+                        minHeight: 35,
+                      ),
                     );
                   },
                 ),
               ),
+              SizedBox(width: 2),
             ],
           ),
         ),
+        SizedBox.square(dimension: 8),
       ],
     );
   }
 }
 
-class _MeterDataHolder with ChangeNotifier {
-  static final _MeterDataHolder _instance = _MeterDataHolder._internal();
-  factory _MeterDataHolder() => _instance;
+class MeterDataHolder with ChangeNotifier {
+  static final MeterDataHolder _instance = MeterDataHolder._internal();
+  factory MeterDataHolder() => _instance;
 
-  _MeterDataHolder._internal();
+  MeterDataHolder._internal();
 
   int _progressBar1 = 50;
 

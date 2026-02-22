@@ -1,3 +1,4 @@
+import 'package:debate_bot/pages/chat.dart';
 import 'package:flutter/material.dart';
 import 'summary.dart';
 
@@ -115,12 +116,15 @@ class _HomeState extends State<Home> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => Summary(
-                              input: sideView == Side.aff
-                                  ? "Affirmative on '${inputcontroller.text}'"
-                                  : "Negative on '${inputcontroller.text}'",
-                              rawInput: inputcontroller.text,
-                            ),
+                            builder: (context) {
+                              MeterDataHolder().setUserRating(50);
+                              return Summary(
+                                input: sideView == Side.aff
+                                    ? "Affirmative on '${inputcontroller.text}'"
+                                    : "Negative on '${inputcontroller.text}'",
+                                rawInput: inputcontroller.text,
+                              );
+                            },
                           ),
                         );
                       },
@@ -133,12 +137,15 @@ class _HomeState extends State<Home> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => Summary(
-                            input: sideView == Side.aff
-                                ? "Affirmative on '${inputcontroller.text}'"
-                                : "Negative on '${inputcontroller.text}'",
-                            rawInput: inputcontroller.text,
-                          ),
+                          builder: (context) {
+                            MeterDataHolder().setUserRating(50);
+                            return Summary(
+                              input: sideView == Side.aff
+                                  ? "Affirmative on '${inputcontroller.text}'"
+                                  : "Negative on '${inputcontroller.text}'",
+                              rawInput: inputcontroller.text,
+                            );
+                          },
                         ),
                       );
                     },
