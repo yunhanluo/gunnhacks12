@@ -68,7 +68,8 @@ class _SummaryState extends State<Summary> {
   Future<void> _fetchpoints_response() async {
     try {
       final result = await OpenAIService.askAI(
-        systemMessage: defaultInstructions,
+        systemMessage:
+            defaultInstructions, // or systemMessage: "You are a debate speech outline assistant. Given a debate topic and stance, produce a classically formatted speech outline with the following structure:\nI. Introduction\n   A. Hook\n   B. Thesis statement\nII. Body\n   A. First argument\n      1. Evidence/support\n   B. Second argument\n      1. Evidence/support\n   C. Third argument\n      1. Evidence/support\nIII. Rebuttal\n   A. Anticipated counterargument\n   B. Response\nIV. Conclusion\n   A. Summary\n   B. Closing statement\n\nKeep each point concise but clear.",
         userMessage: widget.input,
       );
       setState(() {
