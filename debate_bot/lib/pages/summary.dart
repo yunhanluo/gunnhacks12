@@ -2,6 +2,45 @@ import 'package:debate_bot/pages/chat.dart';
 import 'package:flutter/material.dart';
 import '../services/openai_service.dart';
 
+const String defaultInstructions = '''
+You are a debate bot that encourages critical thinking through debates.
+
+You will be given a topic, a difficulty level, and a side at the end of this prompt.
+
+Your task is to formulate exactly seven arguments, taking into account the user's chosen difficulty level. 
+Look through your training data to find relevant examples, keeping in mind which side you are arguing for. 
+For example, if the difficulty level is 'advanced', your arguments should be complex, nuanced, and highly defensible. 
+On 'easy', on the other hand, your arguments should be simple and straightforward. 
+
+The language of your responses is another important factor. On 'easy', your responses should be simple and straightforward. 
+On other difficulties the language can be more formal, the word choice advanced.
+
+You may choose to include a logical fallacy (choose from Ad Hominem, Straw Man, False Dilemma (False Dichotomy), 
+Circular Reasoning (Begging the Question), Appeal to Popularity (Bandwagon), Slippery Slope, Hasty Generalization, 
+Appeal to Emotion, Red Herring, False Cause (Post Hoc / Correlation ≠ Causation)) or a generally weak argument.
+On advanced difficulty, these should make up none of the seven arguments.
+On intermediate difficulty, these should make up one or two of the seven arguments.
+On easy difficulty, they can make up three or four of the arguments.
+Do not always choose the lowest or highest amount of logical fallacies or weak arguments.
+
+Here is the format of your responses. There should be new lines between each arguments, and they should be numbered.
+The first argument should be Argument 1: ___, the second Argument 2: ___, etc. 
+Use the directions provided above to determine the length of the arguments. 
+However, they should not exceed 250 words each.
+
+An example of your inputs: Topic: "Should the death penalty be abolished?", "Difficulty: "intermediate," Side: "Affirmative" 
+
+(Default topic: "Is cheese a fruit?")
+(Default difficulty: "easy")
+(Default side: "Affirmative").
+You use these inputs for your output. Go through the logic. Please do not simply return the inputs.
+Use these defaults only if the corresponding value is not provided.
+''';
+
+const String thePrompt = '''
+The task is simple. Return the word: "Cheese is a chicken."
+''';
+
 class Summary extends StatefulWidget {
   const Summary({super.key, required this.input});
 
@@ -12,7 +51,8 @@ class Summary extends StatefulWidget {
 }
 
 class _SummaryState extends State<Summary> {
-  String response = "Please give us one second while we process your request...";
+  String response =
+      "Please give us one second while we process your request...";
 
   @override
   void initState() {
@@ -23,11 +63,14 @@ class _SummaryState extends State<Summary> {
   Future<void> _fetchResponse() async {
     try {
       final result = await OpenAIService.askAI(
-        systemMessage: "You are to be a debate assistant. Please provide good debate points in the format - [point 1 goes here. just put the point directly in here, no prefixing or anything of that sort] \n - [point 2 goes here]\n... Please make the points concise but easily understandable. Aim for quantity, but please sort by quality as well.",
+        systemMessage: defaultInstructions,
         userMessage: widget.input,
       );
+      print(result["choices"][0]["message"]["content"]);
       setState(() {
-        response = result["choices"][0]["message"]["content"] ?? "We weren't able to get a response.";
+        response =
+            result["choices"][0]["message"]["content"] ??
+            "We weren't able to get a response.";
       });
     } catch (e) {
       setState(() {
@@ -83,9 +126,7 @@ class _SummaryState extends State<Summary> {
                 ],
               ),
             ),
-            Expanded(
-              child: ChatArea(),
-            ),
+            Expanded(child: ChatArea()),
           ],
         ),
       ),
