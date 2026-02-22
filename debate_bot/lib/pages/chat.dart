@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:debate_bot/services/openai_service.dart';
 import 'package:flutter/material.dart';
-
+import 'summary.dart';
 class ChatArea extends StatefulWidget {
   const ChatArea({super.key, required this.topic, required this.rawTopic});
 
@@ -33,6 +33,21 @@ class _ChatAreaState extends State<ChatArea> {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        Card(
+          elevation: 0,
+          color: Theme.of(context).colorScheme.inversePrimary,
+          child: Padding(
+            padding: EdgeInsets.all(8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Current Standing", style: TextStyle(fontSize: 20)),
+                SizedBox(height: 8),
+                MeterArea(),
+              ],
+            ),
+          ),
+        ),
         Expanded(
           child: ListView.builder(
             itemBuilder: (context, index) {

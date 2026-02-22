@@ -37,7 +37,6 @@ class _HomeState extends State<Home> {
   Widget _buildSegmentedButton() {
     return SegmentedButton<Side>(
       showSelectedIcon: false,
-      expandedInsets: EdgeInsets.zero,
       style: ButtonStyle(
         shape: WidgetStatePropertyAll(
           RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
@@ -106,6 +105,7 @@ class _HomeState extends State<Home> {
                     ],
                   ),
                 ),
+                !isNarrow ? SizedBox(height: 8) : SizedBox(height: 0),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 8),
                   child: isNarrow
